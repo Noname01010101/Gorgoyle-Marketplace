@@ -1,0 +1,80 @@
+A. Model Catalog
+
+    Purpose: 
+        Provide a complete, always-updated list of AI models across providers.
+
+    Core Data for Each Model:
+
+        Name, provider, release date, deprecation status
+
+        Fields: vision, NLP, code, audio, multimodal
+
+        Supported input/output formats
+
+        Languages supported
+
+        Price (per token, per request)
+
+        Metrics & benchmarks
+
+        Capabilities summary
+
+B. Pricing Engine
+
+    Purpose: 
+        Centralize price information and allow comparisons.
+
+    Logic:
+
+        Store pricing per provider/model
+
+        Normalize cost into unified metrics (e.g., price per 1M tokens)
+
+        Calculate cost equivalents:
+        “What’s cheaper but similar?”
+
+        Support filtering by cost range
+
+C. Capability Matching
+
+    Purpose: 
+        Let the user answer: “Which model is best for this task?”
+
+    Logic:
+
+        Map models to capability tags (e.g., “OCR”, “translation”, “reasoning”, “agentic tasks”)
+
+        Allow search by capability, field, or modality
+
+        Score candidate models by capability + price + performance data
+
+D. Benchmarks Engine
+
+    Purpose: 
+        Compare models based on objective metrics.
+
+    Logic:
+
+        Store benchmark types (MMLU, GPQA, image benchmarks, etc.)
+
+        Attach scores to each model
+
+        Compute performance comparisons:
+        “Which model is best in reasoning under $X?”
+
+E. Model Equivalency Suggestions
+
+    Purpose: 
+        Provide alternatives when users search for a specific model.
+
+    Logic:
+
+        Compare capability vectors
+
+        Compare pricing
+
+        Compare modality support
+
+        Surface “closest matches”
+        e.g., “If you like GPT-4.1, try Claude 3.7 or Gemini-2.0 Flash for cheaper.”
+

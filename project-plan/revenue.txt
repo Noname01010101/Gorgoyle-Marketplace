@@ -1,0 +1,11 @@
+
+1. Revenue Model
+
+    Free Tier
+        Provides basic model search, essential filters, limited comparisons, and small periodic updates.
+
+    Pro Subscription
+        Unlocks unlimited comparisons, advanced filtering, historical pricing data, cost-optimization insights, bulk export, ready-made usage templates, and full API access.
+
+    Enterprise
+        Offers on-premise data synchronization, integration with internal systems, custom benchmarks, and a multi-user admin dashboard.

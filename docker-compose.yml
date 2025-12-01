@@ -1,0 +1,28 @@
+
+
+services:
+  model-catalog-db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pwd
+      MYSQL_DATABASE: db
+      MYSQL_USER: dev_user
+      MYSQL_PASSWORD: mysql_pwd
+    ports:
+      - "2100:3306"
+    volumes:
+      - model-db-volume:/var/lib/mysql
+  model-catalog-api:
+    build:
+      context: ./model-catalog-api
+      dockerfile: Dockerfile.dev
+    environment:
+      PORT: 1092
+    ports:
+      - "1092:1092"
+    depends_on:
+      - model-catalog-db
+
+volumes:
+  model-db-volume:

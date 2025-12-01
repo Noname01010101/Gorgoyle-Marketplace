@@ -1,0 +1,35 @@
+generator gen {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model AIModel {
+    id          Int        @id @default(autoincrement())
+    name        String
+    version     String
+    provider    AIProvider @relation("providerRel", fields: [providerName], references: [name])
+    providerName  String
+    fields      Fields[]
+    releaseDate DateTime
+
+    @@unique([name, version])
+}
+
+model Fields {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    aiModels AIModel[]
+}
+
+model AIProvider {
+    id      Int    @id @default(autoincrement())
+    name    String @unique
+    country String
+
+    models AIModel[] @relation("providerRel")
+}
