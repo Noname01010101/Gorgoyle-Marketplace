@@ -1,7 +1,7 @@
 
 
 services:
-  model-catalog-db:
+  db:
     image: mysql
     restart: always
     environment:
@@ -12,17 +12,17 @@ services:
     ports:
       - "2100:3306"
     volumes:
-      - model-db-volume:/var/lib/mysql
-  model-catalog-api:
+      - db-volume:/var/lib/mysql
+  api:
     build:
-      context: ./model-catalog-api
+      context: .
       dockerfile: Dockerfile.dev
     environment:
       PORT: 1092
     ports:
       - "1092:1092"
     depends_on:
-      - model-catalog-db
+      - db
 
 volumes:
-  model-db-volume:
+  db-volume:

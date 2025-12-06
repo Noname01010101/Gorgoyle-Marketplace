@@ -1,3 +1,7 @@
+# AI Store Project
+
+This software intends to unify text generative AIs information and make it more accessible for normal people to understand the premium service provided by the companies that host these services, as well as understand more of the technologies themselves.
+
 ## GENERAL PROJECT SETUP
 
     1. Install tools: Download and install VSCode and Git.
