@@ -1,26 +1,23 @@
 {
-  "name": "model-catalog-api",
+  "name": "pricing-api",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "module",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "seed:watch": "nodemon --watch ./prisma --exec \"tsx ./prisma/seed.ts\"",
-    "seed": "tsx ./prisma/seed.ts",
-    "compile": "tsc",
-    "dev": "nodemon",
-    "start": "node ./dist/src/main",
-    "test": "vitest"
+    "test": "vitest",
+    "host": "node ./dist/host.js"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
     "nodemon": "^3.1.11",
     "prisma": "^6.19.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.14"
+    "vitest": "^4.0.15"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

@@ -1,0 +1,69 @@
+generator gen {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model AIModel {
+    id               Int          @id @default(autoincrement())
+    name             String
+    version          String
+    provider         AIProvider   @relation("providerRel", fields: [providerName], references: [name])
+    providerName     String
+    fields           Fields[]
+    releaseDate      DateTime
+    status           String
+    deprecated       Boolean      @default(false)
+    capabilities     Json
+    modalities       Json
+    supportedFormats Json
+    languages        Json
+    metadata         Json?
+    modelPricings    ModelPricing @relation(references: [id], fields: [modelPricingId])
+    modelPricingId   Int
+    benchmarks       Benchmark[]
+
+    @@unique([name, version])
+}
+
+model Fields {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    aiModels AIModel[]
+}
+
+model AIProvider {
+    id      Int    @id @default(autoincrement())
+    name    String @unique
+    country String
+
+    models AIModel[] @relation("providerRel")
+}
+
+model ModelPricing {
+    id                      Int       @id @default(autoincrement())
+    name                    String    @unique
+    model                   AIModel[]
+    outputPricePerMillion   Decimal   @db.Decimal(10, 2)
+    inputPricePerMillion    Decimal   @db.Decimal(10, 2)
+    cachedPricePerMillion   Decimal?  @db.Decimal(10, 2)
+    trainingPricePerMillion Decimal?  @db.Decimal(10, 2)
+    currency                String
+    unit                    String
+    effectiveAt             DateTime
+    normalizedPerMillion    Decimal?  @db.Decimal(10, 2)
+}
+
+model Benchmark {
+    id       Int      @id @default(autoincrement())
+    model    AIModel  @relation(fields: [modelId], references: [id])
+    modelId  Int
+    type     String
+    score    Float
+    runAt    DateTime
+    metadata Json?
+}

@@ -1,11 +1,11 @@
 import express from "express";
-import FieldsQuery from "./queries/fieldsQuery";
-import ModelQuery from "./queries/modelQuery";
-import ProviderQuery from "./queries/providerQuery";
+import FieldsQuery from "./fields";
+import ModelQuery from "./model";
+import ProviderQuery from "./provider";
 
-const server = express();
+const catalogRouter = express.Router();
 
-server.get("/fields", async (req, res) => {
+catalogRouter.get("/fields", async (req, res) => {
   if (req.query["name"]) {
     res.json(await FieldsQuery.getFieldByName(String(req.query["name"])));
     return;
@@ -14,7 +14,7 @@ server.get("/fields", async (req, res) => {
   res.json(await FieldsQuery.getAllFields());
 });
 
-server.get("/models", async (req, res) => {
+catalogRouter.get("/models", async (req, res) => {
   if (req.query["name"]) {
     res.json(await ModelQuery.getModelsByName(String(req.query["name"])));
     return;
@@ -23,7 +23,7 @@ server.get("/models", async (req, res) => {
   res.json(await ModelQuery.getAllModels());
 });
 
-server.get("/providers", async (req, res) => {
+catalogRouter.get("/providers", async (req, res) => {
   if (req.query["name"]) {
     res.json(await ProviderQuery.getProviderByName(String(req.query["name"])));
     return;
@@ -32,8 +32,4 @@ server.get("/providers", async (req, res) => {
   res.json(await ProviderQuery.getAllProviders());
 });
 
-server.get("/", (req, res) => {
-  res.send("working!");
-});
-
-export default server;
+export default catalogRouter;
