@@ -1,25 +1,53 @@
-1. The Problems
+---
+title: Platform Vision & Problem Statement — AI Commerce Store
+date: 2025-12-06
+version: 1.0.0
+authors: ["Tulio"]
+---
 
-* People don’t know which AI model is best for each specific task or field.
-* AI pricing is inconsistent and scattered across many websites.
-* Companies release new models frequently, but there’s no unified, up-to-date catalog.
-* Developers waste time comparing models or manually testing them.
-* Businesses risk overspending because they don’t know cheaper or better alternatives.
+## The Problem
 
-2. The Solution
+- Lack of clarity on which AI model is best for each task or field
+- AI pricing is inconsistent and scattered across many sources
+- No unified, up-to-date catalog for new and existing models
+- Developers waste time manually comparing or testing models
+- Businesses risk overspending due to lack of alternatives visibility
 
-A platform that maps, organizes, and compares AI models by:
-    * Model capabilities
-    * Field (vision, NLP, audio, code, agents, etc.)
-    * Performance metrics
-    * Price per 1M tokens / per request
-    * Provider (OpenAI, Google, Anthropic, Meta, etc.)
-    * Release date and deprecation status
-    * Benchmarks
-    * Supported languages, modalities, and input/output formats
+## The Solution
 
-This allows users to quickly decide:
+The AI Commerce Store is a unified platform that:
 
-    “Which model should I use for X?”
-    “What’s the cheapest equivalent to Y?”
-    “What’s the best model for image + text multimodal?”
+- Maps, organizes, and compares AI models by:
+  - Model capabilities
+  - Field (vision, NLP, audio, code, agents, etc.)
+  - Performance metrics
+  - Price per 1M tokens / per request
+  - Provider (OpenAI, Google, Anthropic, Meta, etc.)
+  - Release date and deprecation status
+  - Benchmarks
+  - Supported languages, modalities, and input/output formats
+
+## User Value
+
+Users can quickly answer:
+
+- "Which model should I use for X?"
+- "What’s the cheapest equivalent to Y?"
+- "What’s the best model for image + text multimodal?"
+
+## Platform Vision
+
+- To be the authoritative source for AI model discovery, pricing, and benchmarking
+- To empower developers, businesses, and researchers to make informed, cost-effective choices
+- To provide transparent, up-to-date, and actionable data for the AI ecosystem
+
+---
+
+## Related Documentation
+
+- [Backend Services](./backendServices.md)
+- [Web Frontend Pages](./web-frontend-pages.md)
+
+---
+
+For questions or to propose doc updates, open a PR and tag `@Product-Team`.

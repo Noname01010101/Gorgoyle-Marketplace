@@ -1,31 +1,143 @@
-# AI Store Project
+# AI Commerce Store
 
-This software intends to unify text generative AIs information and make it more accessible for normal people to understand the premium service provided by the companies that host these services, as well as understand more of the technologies themselves.
+> The authoritative platform for AI model discovery, pricing, benchmarking, and capability matching.
 
-## GENERAL PROJECT SETUP
+---
 
-    1. Install tools: Download and install VSCode and Git.
+## Index
 
-    2. Prepare folder: Create a project folder and open it in VSCode.
+- [Platform Vision & Problem Statement](./docs/main.md)
+- [Backend Services Documentation](./docs/backendServices.md)
+- [Architecture Overview](#architecture-overview)
+- [Project Structure](#project-structure)
+- [Setup & Development](#setup--development)
+- [Testing & Quality](#testing--quality)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Contact & Support](#contact--support)
 
-    3. Configure Git: Set your username and email.
+---
 
-    4. Clone repository: Copy repo URL and run `git clone https://github.com/Noname01010101/ai-store.git`.
+## Architecture Overview
 
-    5. Install dependencies: open the specific service you will develop on and run `npm install`.
+The AI Commerce Store is a modular, enterprise-grade platform designed to:
 
-    6. Branch workflow: Create a new branch before making changes `git checkout -b feature/<short-description-of-feature>`. -> The short description should indicate what you're working on (e.g. creating a new microservice)
+- Aggregate and normalize AI model metadata and pricing across providers
+- Enable fast, transparent model discovery and comparison
+- Provide robust APIs and a modern frontend for developers, businesses, and researchers
 
-    7. install Docker Desktop (Docker commands only work if docker desktop is running)
+**Core services:**
 
+- Model Catalog
+- Pricing Engine
+- Capability Matching
+- Benchmarks Engine
+- Equivalency/Suggestion Service
 
+See [Backend Services Documentation](./docs/backendServices.md) for full details.
 
+---
 
-## API DEVELOPMENT INSTRUCTIONS
+## Project Structure
 
-    7. Download the latest version of node on your local machine
-    8. start the database with `docker-compose up <name-of-the-db> --build` (This command must be ran inside the root project context)
-    9. move what's in .env.dev to .env for development purposes.
-    10. run `npx prisma generate` & `npx prisma db push` & `npm run seed`
+```folder
+├── api/                # Backend services (Node.js/TypeScript, Express, Prisma)
+├── model-catalog-api/  # Standalone model catalog API (dev)
+├── pricing-api/        # Standalone pricing API (dev)
+├── web-frontend/       # Next.js frontend
+├── docs/               # Enterprise documentation (Markdown)
+├── docker-compose.yml  # Multi-service orchestration
+└── README.md           # Project entry point
+```
 
-    * `npm run dev` -> runs the project, which connects to the running database and starts the server
+---
+
+## Setup & Development
+
+### Prerequisites
+
+- Node.js 20+
+- Docker Desktop (for DB and service orchestration)
+- VSCode (recommended)
+- Git
+
+### Getting Started
+
+1. **Clone the repository:**
+
+    ```sh
+    git clone https://github.com/Noname01010101/ai-store.git
+    cd ai-store
+    ```
+
+2. **Install dependencies:**
+
+    ```sh
+    cd api
+    npm install
+    # Repeat for other services as needed
+    ```
+
+3. **Setup environment:**
+    - Copy `.env.dev` to `.env` in each service for local development
+4. **Start database:**
+
+    ```sh
+    docker-compose up <db-service-name> --build
+    ```
+
+5. **Run Prisma migrations and seed:**
+
+    ```sh
+    npx prisma generate
+    npx prisma db push
+    npm run seed
+    ```
+
+6. **Start development server:**
+
+    ```sh
+    npm run dev
+    ```
+
+---
+
+## Testing & Quality
+
+- All services use Vitest for unit/integration tests
+- Linting and type-checking enforced in CI
+- See [Backend Services Documentation](./docs/backendServices.md#testing-strategy)
+
+---
+
+## Deployment
+
+- Containerized via Docker
+- Orchestrated with `docker-compose` (dev) or Kubernetes (prod)
+- Blue/green and canary deploys supported
+- See [Backend Services Documentation](./docs/backendServices.md#deployment--cicd)
+
+---
+
+## Contributing
+
+We welcome contributions! Please:
+
+- Read the [Platform Vision](./docs/main.md) and [Backend Services Documentation](./docs/backendServices.md)
+- Open issues for bugs/feature requests
+- Fork and submit PRs with clear descriptions
+- Follow our [Code of Conduct](./CODE_OF_CONDUCT.md) (if present)
+
+---
+
+## Contact & Support
+
+- For business/enterprise: [Contact Page](./docs/web-frontend-pages.md#contact-page)
+- For technical support: open an issue or contact the Platform Engineering Team
+- Slack: #platform-ops (internal)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.

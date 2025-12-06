@@ -1,81 +1,340 @@
 
-A. Model Catalog
+# Backend Services
 
-    Purpose: 
-        Provide a complete, always-updated list of AI models across providers.
+Purpose: concise reference and operational design for backend services powering the AI Commerce Store. This document is written to enterprise documentation standards: clear ownership, explicit interfaces, data models, SLAs, security controls, observability, and deployment guidance.
 
-    Core Data for Each Model:
+Table of contents
 
-        Name, provider, release date, deprecation status
+- Overview
+- Service Catalogue
+  - Model Catalog Service
+  - Pricing Engine
+  - Capability Matching
+  - Benchmarks Engine
+  - Equivalency / Suggestion Service
+- API contracts (example routes + schemas)
+- Data model (domain schemas)
+- Non-functional requirements (SLA, scale, availability)
+- Observability & Monitoring
+- Security & Compliance
+- Testing strategy
+- Deployment & CI/CD
+- Runbook & Operational Guidance
+- Change log & contacts
 
-        Fields: vision, NLP, code, audio, multimodal
+---
 
-        Supported input/output formats
+## Overview
 
-        Languages supported
+The backend comprises a set of focused services each responsible for a single domain: model metadata, pricing, capability mapping, benchmarks, and equivalency suggestions. Services are REST-first, are written in Node.js/TypeScript, use Prisma for data access, and are intended to be containerized for deployment.
 
-        Price (per token, per request)
+Goals
 
-        Metrics & benchmarks
+- Provide authoritative metadata for models and providers.
+- Normalize pricing information across providers and compute comparable metrics.
+- Offer capability-based matching to recommend models for tasks.
+- Surface benchmark comparisons to evaluate model quality vs cost.
+- Offer operational-grade observability, security, and test coverage.
 
-        Capabilities summary
+## Service Catalogue
 
-B. Pricing Engine
+Each service below includes purpose, responsibilities, primary routes, and data concerns.
 
-    Purpose: 
-        Centralize price information and allow comparisons.
+### 1) Model Catalog Service
 
-    Logic:
+Purpose
 
-        Store pricing per provider/model
+- Maintain model metadata across providers (name, provider, release, deprecation, capabilities, modalities, pricing references).
 
-        Normalize cost into unified metrics (e.g., price per 1M tokens)
+Responsibilities
 
-        Calculate cost equivalents:
-        “What’s cheaper but similar?”
+- CRUD for model metadata.
+- Tagging models with capability vectors and supported modalities.
+- Exposing filtered read APIs for search and discovery.
 
-        Support filtering by cost range
+Primary routes (examples)
 
-C. Capability Matching
+- `GET /catalog/models` — list models, supports query filters (capability, provider, modality, min_score, priceRange)
+- `GET /catalog/models/:id` — model detail
+- `POST /catalog/models` — create model (internal/admin)
+- `PUT /catalog/models/:id` — update model
 
-    Purpose: 
-        Let the user answer: “Which model is best for this task?”
+Data highlights
 
-    Logic:
+- Fields: `id`, `name`, `providerId`, `releaseDate`, `deprecated`, `capabilities[]`, `modalities[]`, `supportedFormats[]`, `languages[]`, `pricingReference` (pointer to Pricing Engine), `metrics[]` (benchmark ids)
 
-        Map models to capability tags (e.g., “OCR”, “translation”, “reasoning”, “agentic tasks”)
+Ownership: Platform / Data Team
 
-        Allow search by capability, field, or modality
+### 2) Pricing Engine
 
-        Score candidate models by capability + price + performance data
+Purpose
 
-D. Benchmarks Engine
+- Collect, normalize, and serve pricing for models/providers.
 
-    Purpose: 
-        Compare models based on objective metrics.
+Responsibilities
 
-    Logic:
+- Store raw pricing data (per request, per token) and derived normalized metrics (e.g., price per 1M tokens).
+- Answer cost comparison queries and produce recommendations like "cheaper but similar".
+- Support time-series price tracking for historical analysis.
 
-        Store benchmark types (MMLU, GPQA, image benchmarks, etc.)
+Primary routes (examples)
 
-        Attach scores to each model
+- `GET /pricing/models/:modelId` — current pricing and normalized metrics
+- `GET /pricing/compare?modelA=...&modelB=...` — cost equivalence
+- `POST /pricing/models/:modelId` — ingest/update price (internal)
 
-        Compute performance comparisons:
-        “Which model is best in reasoning under $X?”
+Data highlights
 
-E. Model Equivalency Suggestions
+- Fields: `modelId`, `currency`, `unit` (token/request), `price`, `effectiveAt`, `normalizedPerMillionTokens`
 
-    Purpose: 
-        Provide alternatives when users search for a specific model.
+Ownership: Pricing Team
 
-    Logic:
+### 3) Capability Matching
 
-        Compare capability vectors
+Purpose
 
-        Compare pricing
+- Score and rank models for a given task using capability vectors + cost + benchmark signals.
 
-        Compare modality support
+Responsibilities
 
-        Surface “closest matches”
-        e.g., “If you like GPT-4.1, try Claude 3.7 or Gemini-2.0 Flash for cheaper.”
+- Maintain capability taxonomy (e.g., OCR, translation, reasoning, code generation, multimodal fusion).
+- Provide ranking endpoints and scoring explanation for decisions.
 
+Primary routes (examples)
+
+- `POST /match` — request: task descriptors; response: ranked models with scores and explanation
+
+Ownership: ML Research / Product
+
+### 4) Benchmarks Engine
+
+Purpose
+
+- Store, serve, and compare benchmark results for models.
+
+Responsibilities
+
+- Persist benchmark records (MMLU, GPQA, image benchmarks, custom tests).
+- Provide aggregated views and normalized benchmark scores used in ranking.
+
+Primary routes
+
+- `GET /benchmarks/models/:modelId`
+- `POST /benchmarks` (ingest)
+
+Ownership: Benchmarks Team
+
+### 5) Equivalency / Suggestion Service
+
+Purpose
+
+- Provide closest-match alternatives based on capability vectors and pricing.
+
+Responsibilities
+
+- Compute similarity in capability space, include cost delta and performance delta.
+- Expose suggestion APIs used by frontend and internal UIs.
+
+Primary routes
+
+- `GET /suggestions/:modelId` — returns ranked comparable models with explanation
+
+Ownership: Product / Platform
+
+---
+
+## API Contracts (examples)
+
+Note: below are representative request / response payloads. Final schemas should live in an OpenAPI spec repository and be validated in CI.
+
+Example: GET /catalog/models/:id response
+
+```json
+{
+    "id": "string",
+    "name": "GPT-4.1",
+    "provider": "ExampleAI",
+    "releaseDate": "2024-11-01",
+    "deprecated": false,
+    "capabilities": ["nlp","reasoning"],
+    "modalities": ["text","image"],
+    "supportedFormats": ["text/plain","image/png"],
+    "languages": ["en","es"],
+    "pricingReference": "/pricing/models/gpt-4.1",
+    "metrics": [{"benchmarkId":"mmlu-2024","score":86.4}]
+}
+```
+
+Example: POST /match request
+
+```json
+{
+    "taskDescription": "High-quality long-form summarization in English",
+    "constraints": { "maxPricePerMillionTokens": 20 },
+    "preferences": { "latency": "low", "costWeight": 0.6 }
+}
+```
+
+Example: POST /match response (partial)
+
+```json
+{
+    "results": [
+        {"modelId":"m-1","score":0.92,"costPer1M":15.2,"explanation":"good mix of summarization and low cost"},
+        {"modelId":"m-2","score":0.84,"costPer1M":9.0,"explanation":"cheaper but lower accuracy on summarization"}
+    ]
+}
+```
+
+---
+
+## Data Model (domain-level)
+
+Keep canonical domain schemas in `prisma/schema.prisma`. Key entities:
+
+- Provider: id, name, contact, url
+- Model: id, name, providerId, releaseDate, status, capabilities[], modalities[], metadata
+- Pricing: id, modelId, unit, currency, price, effectiveAt, normalized
+- Benchmark: id, modelId, type, score, runAt, metadata
+
+Normalization rules
+
+- Currency conversions are handled at ingestion and stored in `baseCurrency` (e.g., USD).
+- Tokens are normalized to `per_1M_tokens` for comparisons.
+
+---
+
+## Non-functional requirements
+
+- Availability: target 99.9% for read APIs; 99.5% for write/admin APIs.
+- Latency: median API response < 120ms for catalog reads at p95 < 500ms.
+- Throughput: scale horizontally behind a load balancer; services should be stateless where possible.
+- Consistency: authoritative model of record is `Model Catalog` for metadata; cross-service eventual consistency via events.
+
+Scaling strategy
+
+- Use autoscaling groups / k8s HPA based on CPU + request latency.
+- Cache catalog reads via Redis CDN where appropriate.
+
+---
+
+## Observability & Monitoring
+
+Metrics
+
+- Request rates, latencies (p50/p95/p99), error rates per route.
+- Domain metrics: number of models, pricing update frequency, suggestion hit-rate.
+
+Logging
+
+- Structured JSON logs (level, timestamp, requestId, userId, route, duration, status).
+
+Tracing
+
+- Distributed tracing with W3C Trace Context; sample traces for requests that call multiple services.
+
+Dashboards / Alerts
+
+- Dashboards for API health, error budgets, pricing ingestion success rate.
+- Alerts: high error rate (>1% over 5m), latency p95 > 1s, pricing ingestion failures.
+
+---
+
+## Security & Compliance
+
+Authentication & Authorization
+
+- Service-to-service TLS mTLS for internal traffic.
+- JWT tokens for external clients; scopes for admin vs read-only operations.
+
+Data protection
+
+- Encrypt PII at rest and in transit. Use KMS for secrets.
+
+Audit & Compliance
+
+- Audit logs for changes to model metadata and pricing.
+
+Secrets
+
+- Use secret manager (e.g., AWS Secrets Manager / Azure KeyVault) for DB credentials and API keys.
+
+---
+
+## Testing strategy
+
+Unit tests
+
+- All services must have unit tests using Vitest/Jest for domain logic.
+
+Integration tests
+
+- API contract tests that assert OpenAPI schema compatibility and end-to-end flows (catalog -> pricing -> match).
+
+E2E
+
+- Synthetic user journeys for key scenarios: search+match+price compare.
+
+Test data
+
+- Use `dbDevData.ts` and clear, isolated dev db instances. Avoid using real provider keys in tests.
+
+CI gating
+
+- Unit tests + lint + typecheck must pass on PRs.
+
+---
+
+## Deployment & CI/CD
+
+Containers
+
+- Build images with reproducible builds and tag by commit SHA.
+
+CI
+
+- Pipeline steps: install, lint, typecheck, unit tests, build image, push image to registry, deploy to staging.
+
+CD
+
+- Blue/green or canary deploys for major changes; automatic rollback on increased error budget.
+
+Database migrations
+
+- Migrations via Prisma; run in a controlled step with backup and migration validation.
+
+---
+
+## Runbook & Operational Guidance
+
+Common incidents
+
+- Pricing ingestion failure: check ingestion logs, re-run ingestion, verify normalization.
+- Catalog inconsistency: check event delivery pipeline; provide manual correction instructions.
+
+Maintenance tasks
+
+- Rotate secrets every 90 days, purge stale models older than X with review.
+
+Contact & escalation
+
+- Pager: Platform on-call rota
+- Slack: #platform-ops
+- Pager duty: Platform primary -> escalation to SRE lead
+
+---
+
+## Change log
+
+- 2025-12-06 v1.0.0 — Initial enterprise rewrite by Platform Engineering Team.
+
+---
+
+## Appendix
+
+- Recommendations: publish an OpenAPI spec for each service; add an architecture diagram in the `docs/diagrams` folder (SVG/PNG + source file).
+- Keep `docs/backendServices.md` synced with any architecture or runbooks.
+
+---
+
+For questions or to propose doc updates, open a PR against `main` and tag `@Platform-Engineering`.
