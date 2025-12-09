@@ -9,7 +9,8 @@
   "scripts": {
     "test": "vitest",
     "host": "node ./dist/host.js",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",

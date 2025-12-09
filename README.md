@@ -91,6 +91,7 @@ See [Backend Services Documentation](./docs/backendServices.md) for full details
     At each backend api:
 
     ```sh
+    npx prisma generate
     npx prisma db push
     npm run seed
     ```

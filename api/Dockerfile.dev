@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20 as builder
 
 WORKDIR /app
 
@@ -7,9 +7,21 @@ RUN npm install
 
 COPY . .
 
-ENV DATABASE_URL="mysql://dev_user:mysql_pwd@db:2100/db"
-
 RUN npx prisma generate
+
+RUN npm run build
+
+FROM node:20
+
+WORKDIR /app
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json .
+COPY --from=builder /app/prisma ./prisma 
+
+RUN npm ci --only=production  # Install production deps
+
+ENV DATABASE_URL="mysql://dev_user:mysql_pwd@db:2100/db"
 
 EXPOSE $PORT
 
