@@ -7,6 +7,10 @@ RUN npm install
 
 COPY . .
 
+ENV DATABASE_URL="mysql://dev_user:mysql_pwd@db:2100/db"
+
+RUN npx prisma generate
+
 EXPOSE $PORT
 
 CMD ["npm", "run", "host"]
