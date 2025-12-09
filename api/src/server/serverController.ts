@@ -1,20 +1,18 @@
-import express from "express";
-import pricingRouter from "../pricing/pricingRouter";
-import catalogRouter from "../model-catalog/catalogRouter";
-import benchmarksRouter from "../benchmarks/benchmarksRouter";
-import capabilityMatchingRouter from "../capability-matching/capabilityMatchingRouter";
-import suggestionsRouter from "../suggestions/suggestionsRouter";
+import { initTRPC } from "@trpc/server";
+import { pricingRouter } from "../pricing/pricingRouter";
+import { catalogRouter } from "../model-catalog/catalogRouter";
+import { benchmarksRouter } from "../benchmarks/benchmarksRouter";
+import { capabilityMatchingRouter } from "../capability-matching/capabilityMatchingRouter";
+import { suggestionsRouter } from "../suggestions/suggestionsRouter";
 
-const serverController = express();
+const t = initTRPC.create();
 
-serverController.get("/", (req, res) => {
-  res.send("working");
+export const appRouter = t.router({
+  pricing: pricingRouter,
+  catalog: catalogRouter,
+  benchmarks: benchmarksRouter,
+  match: capabilityMatchingRouter,
+  suggestions: suggestionsRouter,
 });
 
-serverController.use("/pricing", pricingRouter);
-serverController.use("/catalog", catalogRouter);
-serverController.use("/benchmarks", benchmarksRouter);
-serverController.use("/match", capabilityMatchingRouter);
-serverController.use("/suggestions", suggestionsRouter);
-
-export default serverController;
+export type AppRouter = typeof appRouter;
