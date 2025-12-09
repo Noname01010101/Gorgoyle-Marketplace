@@ -54,7 +54,8 @@ export default function PricingPage() {
       setLoading(true);
       setError(null);
       const data = await trpc.catalog.getModels.query({});
-      setModels(data);
+      const raw: unknown = data;
+      setModels(raw as Model[]);
     } catch (err) {
       setError("Failed to load pricing data");
       console.error(err);
