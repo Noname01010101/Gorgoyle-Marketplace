@@ -11,14 +11,34 @@ import Link from "next/link";
 interface Model {
   id: number;
   name: string;
-  providerId: number;
-  contextWindow: number;
-  maxOutputTokens: number;
-  inputPricePerMillion: number;
-  outputPricePerMillion: number;
-  description?: string;
-  provider?: {
+  version: string;
+  providerName: string;
+  releaseDate: string | Date;
+  status: string;
+  deprecated: boolean;
+  capabilities: any;
+  modalities: any;
+  supportedFormats: any;
+  languages: any;
+  metadata?: any;
+  modelPricingId: number;
+  fields: Array<{ id: number; name: string }>;
+  provider: {
+    id: number;
     name: string;
+    country: string;
+  };
+  modelPricings?: {
+    id: number;
+    name: string;
+    outputPricePerMillion: any;
+    inputPricePerMillion: any;
+    cachedPricePerMillion?: any;
+    trainingPricePerMillion?: any;
+    currency: string;
+    unit: string;
+    effectiveAt: string | Date;
+    normalizedPerMillion?: any;
   };
 }
 
@@ -38,7 +58,7 @@ export default function ModelsPage() {
       setLoading(true);
       setError(null);
       const data = await trpc.catalog.getModels.query({});
-      setModels(data);
+      setModels(data as any);
     } catch (err) {
       setError("Failed to load models");
       console.error(err);
@@ -53,9 +73,11 @@ export default function ModelsPage() {
     )
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "price")
-        return a.inputPricePerMillion - b.inputPricePerMillion;
-      if (sortBy === "context") return b.contextWindow - a.contextWindow;
+      if (sortBy === "price") {
+        const aPrice = Number(a.modelPricings?.inputPricePerMillion || 0);
+        const bPrice = Number(b.modelPricings?.inputPricePerMillion || 0);
+        return aPrice - bPrice;
+      }
       return 0;
     });
 
@@ -129,32 +151,55 @@ export default function ModelsPage() {
                       </div>
 
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-text-tertiary">Context:</span>
-                          <span className="text-text-primary font-medium">
-                            {model.contextWindow.toLocaleString()} tokens
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-text-tertiary">
-                            Max Output:
-                          </span>
-                          <span className="text-text-primary font-medium">
-                            {model.maxOutputTokens.toLocaleString()} tokens
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-text-tertiary">Input:</span>
-                          <span className="text-text-primary font-medium">
-                            ${model.inputPricePerMillion}/M
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-text-tertiary">Output:</span>
-                          <span className="text-text-primary font-medium">
-                            ${model.outputPricePerMillion}/M
-                          </span>
-                        </div>
+                        {model.metadata && (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-text-tertiary">
+                                Context:
+                              </span>
+                              <span className="text-text-primary font-medium">
+                                {model.metadata.contextWindowTokens?.toLocaleString() ||
+                                  "N/A"}{" "}
+                                tokens
+                              </span>
+                            </div>
+                            {model.metadata.maxOutputTokens && (
+                              <div className="flex justify-between">
+                                <span className="text-text-tertiary">
+                                  Max Output:
+                                </span>
+                                <span className="text-text-primary font-medium">
+                                  {model.metadata.maxOutputTokens?.toLocaleString()}{" "}
+                                  tokens
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        )}
+                        {model.modelPricings && (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-text-tertiary">Input:</span>
+                              <span className="text-text-primary font-medium">
+                                $
+                                {model.modelPricings.inputPricePerMillion?.toString() ||
+                                  "N/A"}
+                                /M
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-text-tertiary">
+                                Output:
+                              </span>
+                              <span className="text-text-primary font-medium">
+                                $
+                                {model.modelPricings.outputPricePerMillion?.toString() ||
+                                  "N/A"}
+                                /M
+                              </span>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       <div className="pt-4 border-t border-border">

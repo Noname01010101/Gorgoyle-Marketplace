@@ -12,12 +12,25 @@ interface MatchResult {
   model: {
     id: number;
     name: string;
-    inputPricePerMillion: number;
-    outputPricePerMillion: number;
-    contextWindow: number;
+    version: string;
+    providerName: string;
     provider?: {
+      id: number;
       name: string;
     };
+    modelPricings?: {
+      inputPricePerMillion: any; // Prisma Decimal
+      outputPricePerMillion: any; // Prisma Decimal
+    };
+    fields?: Array<{
+      id: number;
+      name: string;
+    }>;
+    metadata?: any;
+    capabilities?: any;
+    modalities?: any;
+    supportedFormats?: any;
+    languages?: any;
   };
   score: number;
   reasoning: string;
@@ -51,7 +64,7 @@ export default function CapabilityMatchingPage() {
         preferences: { costWeight },
       });
 
-      setResults(response.results || []);
+      setResults((response.results as any) || []);
     } catch (err) {
       setError("Failed to find matching models");
       console.error(err);
@@ -228,30 +241,42 @@ export default function CapabilityMatchingPage() {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <div className="text-text-tertiary mb-1">
-                          Input Price
+                      {result.model.modelPricings && (
+                        <>
+                          <div>
+                            <div className="text-text-tertiary mb-1">
+                              Input Price
+                            </div>
+                            <div className="text-text-primary font-semibold">
+                              $
+                              {result.model.modelPricings.inputPricePerMillion?.toString() ||
+                                "N/A"}
+                              /M
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-text-tertiary mb-1">
+                              Output Price
+                            </div>
+                            <div className="text-text-primary font-semibold">
+                              $
+                              {result.model.modelPricings.outputPricePerMillion?.toString() ||
+                                "N/A"}
+                              /M
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {result.model.metadata?.contextWindowTokens && (
+                        <div>
+                          <div className="text-text-tertiary mb-1">
+                            Context Window
+                          </div>
+                          <div className="text-text-primary font-semibold">
+                            {result.model.metadata.contextWindowTokens.toLocaleString()}
+                          </div>
                         </div>
-                        <div className="text-text-primary font-semibold">
-                          ${result.model.inputPricePerMillion}/M
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-text-tertiary mb-1">
-                          Output Price
-                        </div>
-                        <div className="text-text-primary font-semibold">
-                          ${result.model.outputPricePerMillion}/M
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-text-tertiary mb-1">
-                          Context Window
-                        </div>
-                        <div className="text-text-primary font-semibold">
-                          {result.model.contextWindow.toLocaleString()}
-                        </div>
-                      </div>
+                      )}
                       <div>
                         <Link
                           href={`/models/${result.model.id}`}

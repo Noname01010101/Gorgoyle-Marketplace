@@ -11,13 +11,25 @@ import Link from "next/link";
 interface Model {
   id: number;
   name: string;
-  inputPricePerMillion: number;
-  outputPricePerMillion: number;
-  contextWindow: number;
-  maxOutputTokens: number;
+  version: string;
+  providerName: string;
   provider?: {
+    id: number;
     name: string;
   };
+  modelPricings?: {
+    inputPricePerMillion: any; // Prisma Decimal
+    outputPricePerMillion: any; // Prisma Decimal
+  };
+  fields?: Array<{
+    id: number;
+    name: string;
+  }>;
+  metadata?: any;
+  capabilities?: any;
+  modalities?: any;
+  supportedFormats?: any;
+  languages?: any;
 }
 
 export default function SuggestionsPage() {
@@ -138,36 +150,56 @@ export default function SuggestionsPage() {
                       </Link>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-sm">
-                      <div>
-                        <div className="text-text-tertiary mb-1">
-                          Input Price
-                        </div>
-                        <div className="text-text-primary font-semibold">
-                          ${selectedModel.inputPricePerMillion}/M
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-text-tertiary mb-1">
-                          Output Price
-                        </div>
-                        <div className="text-text-primary font-semibold">
-                          ${selectedModel.outputPricePerMillion}/M
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-text-tertiary mb-1">Context</div>
-                        <div className="text-text-primary font-semibold">
-                          {selectedModel.contextWindow.toLocaleString()}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-text-tertiary mb-1">
-                          Max Output
-                        </div>
-                        <div className="text-text-primary font-semibold">
-                          {selectedModel.maxOutputTokens.toLocaleString()}
-                        </div>
-                      </div>
+                      {selectedModel.modelPricings && (
+                        <>
+                          <div>
+                            <div className="text-text-tertiary mb-1">
+                              Input Price
+                            </div>
+                            <div className="text-text-primary font-semibold">
+                              $
+                              {selectedModel.modelPricings.inputPricePerMillion?.toString() ||
+                                "N/A"}
+                              /M
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-text-tertiary mb-1">
+                              Output Price
+                            </div>
+                            <div className="text-text-primary font-semibold">
+                              $
+                              {selectedModel.modelPricings.outputPricePerMillion?.toString() ||
+                                "N/A"}
+                              /M
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {selectedModel.metadata && (
+                        <>
+                          {selectedModel.metadata.contextWindowTokens && (
+                            <div>
+                              <div className="text-text-tertiary mb-1">
+                                Context
+                              </div>
+                              <div className="text-text-primary font-semibold">
+                                {selectedModel.metadata.contextWindowTokens.toLocaleString()}
+                              </div>
+                            </div>
+                          )}
+                          {selectedModel.metadata.maxOutputTokens && (
+                            <div>
+                              <div className="text-text-tertiary mb-1">
+                                Max Output
+                              </div>
+                              <div className="text-text-primary font-semibold">
+                                {selectedModel.metadata.maxOutputTokens.toLocaleString()}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </Card>
 
@@ -219,30 +251,43 @@ export default function SuggestionsPage() {
                             </p>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm pt-4 border-t border-border">
-                              <div>
-                                <div className="text-text-tertiary mb-1">
-                                  Input
+                              {suggestion.model.modelPricings && (
+                                <>
+                                  <div>
+                                    <div className="text-text-tertiary mb-1">
+                                      Input
+                                    </div>
+                                    <div className="text-text-primary font-medium">
+                                      $
+                                      {suggestion.model.modelPricings.inputPricePerMillion?.toString() ||
+                                        "N/A"}
+                                      /M
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="text-text-tertiary mb-1">
+                                      Output
+                                    </div>
+                                    <div className="text-text-primary font-medium">
+                                      $
+                                      {suggestion.model.modelPricings.outputPricePerMillion?.toString() ||
+                                        "N/A"}
+                                      /M
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                              {suggestion.model.metadata
+                                ?.contextWindowTokens && (
+                                <div>
+                                  <div className="text-text-tertiary mb-1">
+                                    Context
+                                  </div>
+                                  <div className="text-text-primary font-medium">
+                                    {suggestion.model.metadata.contextWindowTokens.toLocaleString()}
+                                  </div>
                                 </div>
-                                <div className="text-text-primary font-medium">
-                                  ${suggestion.model.inputPricePerMillion}/M
-                                </div>
-                              </div>
-                              <div>
-                                <div className="text-text-tertiary mb-1">
-                                  Output
-                                </div>
-                                <div className="text-text-primary font-medium">
-                                  ${suggestion.model.outputPricePerMillion}/M
-                                </div>
-                              </div>
-                              <div>
-                                <div className="text-text-tertiary mb-1">
-                                  Context
-                                </div>
-                                <div className="text-text-primary font-medium">
-                                  {suggestion.model.contextWindow.toLocaleString()}
-                                </div>
-                              </div>
+                              )}
                               <div className="flex items-end">
                                 <button
                                   onClick={() =>

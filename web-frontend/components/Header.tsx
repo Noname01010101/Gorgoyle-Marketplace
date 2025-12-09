@@ -7,7 +7,6 @@ export default function Header() {
     { href: "/capability-matching", label: "Matching" },
     { href: "/benchmarks", label: "Benchmarks" },
     { href: "/suggestions", label: "Suggestions" },
-    { href: "/api-check", label: "API" },
   ];
 
   return (

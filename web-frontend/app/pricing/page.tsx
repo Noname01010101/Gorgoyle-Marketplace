@@ -11,14 +11,25 @@ import Link from "next/link";
 interface Model {
   id: number;
   name: string;
-  providerId: number;
-  contextWindow: number;
-  maxOutputTokens: number;
-  inputPricePerMillion: number;
-  outputPricePerMillion: number;
+  version: string;
+  providerName: string;
   provider?: {
+    id: number;
     name: string;
   };
+  modelPricings?: {
+    inputPricePerMillion: any; // Prisma Decimal
+    outputPricePerMillion: any; // Prisma Decimal
+  };
+  fields?: Array<{
+    id: number;
+    name: string;
+  }>;
+  metadata?: any;
+  capabilities?: any;
+  modalities?: any;
+  supportedFormats?: any;
+  languages?: any;
 }
 
 export default function PricingPage() {
@@ -53,22 +64,34 @@ export default function PricingPage() {
   };
 
   const filterModels = () => {
-    let filtered = models.filter(
-      (model) =>
-        model.inputPricePerMillion >= minInput &&
-        model.outputPricePerMillion <= maxOutput
-    );
+    let filtered = models.filter((model) => {
+      if (!model.modelPricings) return false;
+      const inputPrice = parseFloat(
+        model.modelPricings.inputPricePerMillion?.toString() || "0"
+      );
+      const outputPrice = parseFloat(
+        model.modelPricings.outputPricePerMillion?.toString() || "0"
+      );
+      return inputPrice >= minInput && outputPrice <= maxOutput;
+    });
 
     filtered.sort((a, b) => {
-      if (sortBy === "input")
-        return a.inputPricePerMillion - b.inputPricePerMillion;
-      if (sortBy === "output")
-        return a.outputPricePerMillion - b.outputPricePerMillion;
-      return (
-        a.inputPricePerMillion +
-        a.outputPricePerMillion -
-        (b.inputPricePerMillion + b.outputPricePerMillion)
+      const aInput = parseFloat(
+        a.modelPricings?.inputPricePerMillion?.toString() || "0"
       );
+      const aOutput = parseFloat(
+        a.modelPricings?.outputPricePerMillion?.toString() || "0"
+      );
+      const bInput = parseFloat(
+        b.modelPricings?.inputPricePerMillion?.toString() || "0"
+      );
+      const bOutput = parseFloat(
+        b.modelPricings?.outputPricePerMillion?.toString() || "0"
+      );
+
+      if (sortBy === "input") return aInput - bInput;
+      if (sortBy === "output") return aOutput - bOutput;
+      return aInput + aOutput - (bInput + bOutput);
     });
 
     setFilteredModels(filtered);
@@ -79,8 +102,15 @@ export default function PricingPage() {
     inputTokens: number,
     outputTokens: number
   ) => {
-    const inputCost = (inputTokens / 1000000) * model.inputPricePerMillion;
-    const outputCost = (outputTokens / 1000000) * model.outputPricePerMillion;
+    if (!model.modelPricings) return 0;
+    const inputPrice = parseFloat(
+      model.modelPricings.inputPricePerMillion?.toString() || "0"
+    );
+    const outputPrice = parseFloat(
+      model.modelPricings.outputPricePerMillion?.toString() || "0"
+    );
+    const inputCost = (inputTokens / 1000000) * inputPrice;
+    const outputCost = (outputTokens / 1000000) * outputPrice;
     return inputCost + outputCost;
   };
 
@@ -215,7 +245,9 @@ export default function PricingPage() {
                         Input
                       </div>
                       <div className="text-lg font-semibold text-text-primary">
-                        ${model.inputPricePerMillion}
+                        $
+                        {model.modelPricings?.inputPricePerMillion?.toString() ||
+                          "N/A"}
                       </div>
                       <div className="text-xs text-text-tertiary">
                         /M tokens
@@ -227,7 +259,9 @@ export default function PricingPage() {
                         Output
                       </div>
                       <div className="text-lg font-semibold text-text-primary">
-                        ${model.outputPricePerMillion}
+                        $
+                        {model.modelPricings?.outputPricePerMillion?.toString() ||
+                          "N/A"}
                       </div>
                       <div className="text-xs text-text-tertiary">
                         /M tokens

@@ -12,15 +12,26 @@ import Link from "next/link";
 interface Model {
   id: number;
   name: string;
-  providerId: number;
-  contextWindow: number;
-  maxOutputTokens: number;
-  inputPricePerMillion: number;
-  outputPricePerMillion: number;
+  version: string;
+  providerName: string;
   description?: string;
   provider?: {
+    id: number;
     name: string;
   };
+  modelPricings?: {
+    inputPricePerMillion: any; // Prisma Decimal
+    outputPricePerMillion: any; // Prisma Decimal
+  };
+  fields?: Array<{
+    id: number;
+    name: string;
+  }>;
+  metadata?: any;
+  capabilities?: any;
+  modalities?: any;
+  supportedFormats?: any;
+  languages?: any;
 }
 
 interface Benchmark {
@@ -62,13 +73,13 @@ export default function ModelDetailPage({
       setLoading(true);
       setError(null);
 
-      const [modelsData, benchmarksData, suggestionsData] = await Promise.all([
-        trpc.catalog.getModels.query({}),
-        trpc.benchmarks.getModelBenchmarks.query({ modelId }).catch(() => []),
-        trpc.suggestions.getSuggestionsForModel
-          .query({ modelId })
-          .catch(() => ({ suggestions: [] })),
-      ]);
+      const modelsData: any = await trpc.catalog.getModels.query({});
+      const benchmarksData: any = await trpc.benchmarks.getModelBenchmarks
+        .query({ modelId })
+        .catch(() => []);
+      const suggestionsData: any = await trpc.suggestions.getSuggestionsForModel
+        .query({ modelId })
+        .catch(() => ({ suggestions: [] }));
 
       const foundModel = modelsData.find((m: Model) => m.id === modelId);
       if (!foundModel) {
@@ -77,8 +88,8 @@ export default function ModelDetailPage({
       }
 
       setModel(foundModel);
-      setBenchmarks(benchmarksData);
-      setSuggestions(suggestionsData.suggestions || []);
+      setBenchmarks(benchmarksData as any);
+      setSuggestions((suggestionsData.suggestions as any) || []);
     } catch (err) {
       setError("Failed to load model details");
       console.error(err);
@@ -145,47 +156,95 @@ export default function ModelDetailPage({
               <Card>
                 <h3 className="text-xl font-semibold mb-4">Specifications</h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-text-tertiary">Context Window:</span>
-                    <span className="text-text-primary font-medium">
-                      {model.contextWindow.toLocaleString()} tokens
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-text-tertiary">Max Output:</span>
-                    <span className="text-text-primary font-medium">
-                      {model.maxOutputTokens.toLocaleString()} tokens
-                    </span>
-                  </div>
+                  {model.metadata && (
+                    <>
+                      {model.metadata.contextWindowTokens && (
+                        <div className="flex justify-between">
+                          <span className="text-text-tertiary">
+                            Context Window:
+                          </span>
+                          <span className="text-text-primary font-medium">
+                            {model.metadata.contextWindowTokens.toLocaleString()}{" "}
+                            tokens
+                          </span>
+                        </div>
+                      )}
+                      {model.metadata.maxOutputTokens && (
+                        <div className="flex justify-between">
+                          <span className="text-text-tertiary">
+                            Max Output:
+                          </span>
+                          <span className="text-text-primary font-medium">
+                            {model.metadata.maxOutputTokens.toLocaleString()}{" "}
+                            tokens
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {(!model.metadata ||
+                    (!model.metadata.contextWindowTokens &&
+                      !model.metadata.maxOutputTokens)) && (
+                    <p className="text-text-secondary text-sm">
+                      No specification data available
+                    </p>
+                  )}
                 </div>
               </Card>
 
               <Card>
                 <h3 className="text-xl font-semibold mb-4">Pricing</h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-text-tertiary">Input Tokens:</span>
-                    <span className="text-text-primary font-medium">
-                      ${model.inputPricePerMillion}/M
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-text-tertiary">Output Tokens:</span>
-                    <span className="text-text-primary font-medium">
-                      ${model.outputPricePerMillion}/M
-                    </span>
-                  </div>
-                  <div className="flex justify-between pt-3 border-t border-border">
-                    <span className="text-text-tertiary">Est. 1M tokens:</span>
-                    <span className="text-text-primary font-bold">
-                      $
-                      {(
-                        (model.inputPricePerMillion +
-                          model.outputPricePerMillion) /
-                        2
-                      ).toFixed(2)}
-                    </span>
-                  </div>
+                  {model.modelPricings ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-text-tertiary">
+                          Input Tokens:
+                        </span>
+                        <span className="text-text-primary font-medium">
+                          $
+                          {model.modelPricings.inputPricePerMillion?.toString() ||
+                            "N/A"}
+                          /M
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-text-tertiary">
+                          Output Tokens:
+                        </span>
+                        <span className="text-text-primary font-medium">
+                          $
+                          {model.modelPricings.outputPricePerMillion?.toString() ||
+                            "N/A"}
+                          /M
+                        </span>
+                      </div>
+                      {model.modelPricings.inputPricePerMillion &&
+                        model.modelPricings.outputPricePerMillion && (
+                          <div className="flex justify-between pt-3 border-t border-border">
+                            <span className="text-text-tertiary">
+                              Est. 1M tokens:
+                            </span>
+                            <span className="text-text-primary font-bold">
+                              $
+                              {(
+                                (parseFloat(
+                                  model.modelPricings.inputPricePerMillion.toString()
+                                ) +
+                                  parseFloat(
+                                    model.modelPricings.outputPricePerMillion.toString()
+                                  )) /
+                                2
+                              ).toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                    </>
+                  ) : (
+                    <p className="text-text-secondary text-sm">
+                      No pricing data available
+                    </p>
+                  )}
                 </div>
               </Card>
             </div>
@@ -267,19 +326,28 @@ export default function ModelDetailPage({
                           {suggestion.reason}
                         </p>
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-text-tertiary">Input:</span>
-                            <span className="text-text-primary">
-                              ${suggestion.model.inputPricePerMillion}/M
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-text-tertiary">Context:</span>
-                            <span className="text-text-primary">
-                              {suggestion.model.contextWindow.toLocaleString()}{" "}
-                              tokens
-                            </span>
-                          </div>
+                          {suggestion.model.modelPricings && (
+                            <div className="flex justify-between">
+                              <span className="text-text-tertiary">Input:</span>
+                              <span className="text-text-primary">
+                                $
+                                {suggestion.model.modelPricings.inputPricePerMillion?.toString() ||
+                                  "N/A"}
+                                /M
+                              </span>
+                            </div>
+                          )}
+                          {suggestion.model.metadata?.contextWindowTokens && (
+                            <div className="flex justify-between">
+                              <span className="text-text-tertiary">
+                                Context:
+                              </span>
+                              <span className="text-text-primary">
+                                {suggestion.model.metadata.contextWindowTokens.toLocaleString()}{" "}
+                                tokens
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </Card>
                     </Link>
