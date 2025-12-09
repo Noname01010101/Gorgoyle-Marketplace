@@ -134,5 +134,14 @@ async function main() {
   });
 }
 
-main();
-await prisma.$disconnect();
+async function run() {
+  try {
+    await main();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+run();
