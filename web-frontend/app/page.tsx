@@ -100,7 +100,7 @@ export default function Home() {
                   View all models →
                 </Link>
               </div>
-              <div className="h-80 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800">
+              <div className="h-80 bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800">
                 <img
                   src="./front-page/top_8_ai_logos.png"
                   alt="Claude versus OpenAI"
@@ -112,7 +112,7 @@ export default function Home() {
           {/* Pricing Comparison */}
           <div className="mb-32">
             <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="h-80 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800 order-2 md:order-1">
+              <div className="h-80 bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800 order-2 md:order-1">
                 <img src="./front-page/pricing.png" alt="" />
               </div>
               <div className="space-y-6 order-1 md:order-2">
@@ -151,7 +151,7 @@ export default function Home() {
                   View benchmarks →
                 </Link>
               </div>
-              <div className="h-80 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800">
+              <div className="h-80 bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800">
                 <img src="./front-page/claude_vs_openai_v2.png" alt="" />
               </div>
             </div>

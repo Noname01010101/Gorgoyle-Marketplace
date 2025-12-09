@@ -112,7 +112,7 @@ export default function LearnMorePage() {
                 {stats.map((stat) => (
                   <div
                     key={stat.label}
-                    className="border border-white/5 rounded-2xl px-4 py-3 bg-white/5 bg-gradient-to-br from-white/5 to-transparent"
+                    className="border border-white/5 rounded-2xl px-4 py-3 bg-white/5 bg-linear-to-br from-white/5 to-transparent"
                   >
                     <div className="text-lg font-semibold text-white">
                       {stat.value}
@@ -126,8 +126,8 @@ export default function LearnMorePage() {
             </div>
 
             <div className="relative h-80 md:h-96">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-600/80 via-blue-500/30 to-transparent blur-3xl opacity-60" />
-              <div className="relative h-full rounded-3xl bg-gradient-to-br from-gray-900 via-gray-950 to-black border border-white/10 overflow-hidden flex flex-col">
+              <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-blue-600/80 via-blue-500/30 to-transparent blur-3xl opacity-60" />
+              <div className="relative h-full rounded-3xl bg-linear-to-br from-gray-900 via-gray-950 to-black border border-white/10 overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 text-xs text-gray-400">
                   <span className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-emerald-400" />
@@ -178,7 +178,7 @@ export default function LearnMorePage() {
                     </div>
                   </div>
 
-                  <div className="mt-1 rounded-2xl bg-gradient-to-r from-blue-600/40 via-blue-500/10 to-transparent border border-white/10 px-4 py-3 flex items-center justify-between gap-4">
+                  <div className="mt-1 rounded-2xl bg-linear-to-r from-blue-600/40 via-blue-500/10 to-transparent border border-white/10 px-4 py-3 flex items-center justify-between gap-4">
                     <div>
                       <div className="text-xs text-gray-300">
                         Recommended next model
@@ -229,7 +229,7 @@ export default function LearnMorePage() {
               {pillars.map((pillar) => (
                 <div
                   key={pillar.title}
-                  className="rounded-3xl border border-white/5 bg-white/5 bg-gradient-to-br from-white/5 to-transparent px-5 py-4"
+                  className="rounded-3xl border border-white/5 bg-white/5 bg-linear-to-br from-white/5 to-transparent px-5 py-4"
                 >
                   <h3 className="text-lg font-medium text-white">
                     {pillar.title}
@@ -266,7 +266,7 @@ export default function LearnMorePage() {
               {flows.map((flow) => (
                 <div
                   key={flow.title}
-                  className="rounded-3xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent p-5 flex flex-col"
+                  className="rounded-3xl border border-white/5 bg-linear-to-b from-white/5 to-transparent p-5 flex flex-col"
                 >
                   <p className="text-[11px] uppercase tracking-[0.16em] text-gray-400">
                     {flow.eyebrow}
@@ -293,7 +293,7 @@ export default function LearnMorePage() {
 
         {/* Final CTA */}
         <section className="px-6 mt-28">
-          <div className="max-w-5xl mx-auto rounded-4xl border border-white/10 bg-gradient-to-r from-blue-600/40 via-blue-600/10 to-transparent px-8 py-10 md:px-12 md:py-12 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="max-w-5xl mx-auto rounded-4xl border border-white/10 bg-linear-to-r from-blue-600/40 via-blue-600/10 to-transparent px-8 py-10 md:px-12 md:py-12 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="space-y-3">
               <p className="text-sm uppercase tracking-[0.2em] text-blue-200/80">
                 Ready when you are

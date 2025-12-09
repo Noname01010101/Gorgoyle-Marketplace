@@ -89,7 +89,7 @@ See [Backend Services Documentation](./docs/backendServices.md) for full details
 5. **Run Prisma migrations and seed:**
 
     At each backend api:
-    
+
     ```sh
     npx prisma db push
     npm run seed
