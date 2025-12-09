@@ -101,7 +101,10 @@ export default function Home() {
                 </Link>
               </div>
               <div className="h-80 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800">
-                  <img src="./front-page/top_8_ai_logos.png" alt="Claude versus OpenAI" />
+                <img
+                  src="./front-page/top_8_ai_logos.png"
+                  alt="Claude versus OpenAI"
+                />
               </div>
             </div>
           </div>

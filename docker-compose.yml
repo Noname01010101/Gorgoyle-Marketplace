@@ -15,7 +15,7 @@ services:
       - db-volume:/var/lib/mysql
   api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile.dev
     environment:
       PORT: 1092

@@ -96,6 +96,10 @@ See [Backend Services Documentation](./docs/backendServices.md) for full details
 
 6. **Start development server:**
 
+    1. Start the apis with docker-compose.
+
+    2. At the service you're developing's context:
+
     ```sh
     npm run dev
     ```
