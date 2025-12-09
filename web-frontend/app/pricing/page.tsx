@@ -1,14 +1,278 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Header from "@/components/Header";
+import Card from "@/components/Card";
+import LoadingState from "@/components/LoadingState";
+import ErrorState from "@/components/ErrorState";
+import { trpc } from "@/lib/trpc";
+import Link from "next/link";
+
+interface Model {
+  id: number;
+  name: string;
+  providerId: number;
+  contextWindow: number;
+  maxOutputTokens: number;
+  inputPricePerMillion: number;
+  outputPricePerMillion: number;
+  provider?: {
+    name: string;
+  };
+}
+
 export default function PricingPage() {
-  // TODO: Fetch and compare pricing from API
+  const [models, setModels] = useState<Model[]>([]);
+  const [filteredModels, setFilteredModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [minInput, setMinInput] = useState(0);
+  const [maxOutput, setMaxOutput] = useState(100);
+  const [sortBy, setSortBy] = useState<"total" | "input" | "output">("total");
+
+  useEffect(() => {
+    loadModels();
+  }, []);
+
+  useEffect(() => {
+    filterModels();
+  }, [minInput, maxOutput, models, sortBy]);
+
+  const loadModels = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await trpc.catalog.getModels.query({});
+      setModels(data);
+    } catch (err) {
+      setError("Failed to load pricing data");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterModels = () => {
+    let filtered = models.filter(
+      (model) =>
+        model.inputPricePerMillion >= minInput &&
+        model.outputPricePerMillion <= maxOutput
+    );
+
+    filtered.sort((a, b) => {
+      if (sortBy === "input")
+        return a.inputPricePerMillion - b.inputPricePerMillion;
+      if (sortBy === "output")
+        return a.outputPricePerMillion - b.outputPricePerMillion;
+      return (
+        a.inputPricePerMillion +
+        a.outputPricePerMillion -
+        (b.inputPricePerMillion + b.outputPricePerMillion)
+      );
+    });
+
+    setFilteredModels(filtered);
+  };
+
+  const calculateCost = (
+    model: Model,
+    inputTokens: number,
+    outputTokens: number
+  ) => {
+    const inputCost = (inputTokens / 1000000) * model.inputPricePerMillion;
+    const outputCost = (outputTokens / 1000000) * model.outputPricePerMillion;
+    return inputCost + outputCost;
+  };
+
+  if (loading) return <LoadingState message="Loading pricing data..." />;
+  if (error) return <ErrorState message={error} onRetry={loadModels} />;
+
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Pricing Comparison</h2>
-      <p className="mb-4 text-gray-700">
-        Compare model pricing across providers.
-      </p>
-      <div className="bg-white rounded shadow p-4">
-        <p className="text-gray-500">Pricing data coming soon...</p>
-      </div>
+    <div className="min-h-screen bg-background text-foreground">
+      <Header />
+
+      <main className="pt-24 pb-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h1 className="text-5xl font-semibold tracking-tight mb-4">
+              AI Model Pricing
+            </h1>
+            <p className="text-xl text-text-secondary">
+              Compare costs and find the most cost-effective model for your
+              needs
+            </p>
+          </div>
+
+          {/* Price Range Filters */}
+          <Card className="mb-8">
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold">
+                Filter by Price Range ($/M tokens)
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm text-text-tertiary mb-2">
+                    Min Input Price
+                  </label>
+                  <input
+                    type="number"
+                    value={minInput}
+                    onChange={(e) => setMinInput(Number(e.target.value))}
+                    min="0"
+                    step="0.1"
+                    className="w-full px-4 py-2 bg-card-bg border border-border rounded-lg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-text-tertiary mb-2">
+                    Max Output Price
+                  </label>
+                  <input
+                    type="number"
+                    value={maxOutput}
+                    onChange={(e) => setMaxOutput(Number(e.target.value))}
+                    min="0"
+                    step="0.1"
+                    className="w-full px-4 py-2 bg-card-bg border border-border rounded-lg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm text-text-tertiary mb-2">
+                    Sort By
+                  </label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="w-full px-4 py-2 bg-card-bg border border-border rounded-lg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                  >
+                    <option value="total">Total Cost</option>
+                    <option value="input">Input Price</option>
+                    <option value="output">Output Price</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="text-sm text-text-secondary">
+                Showing {filteredModels.length} of {models.length} models
+              </div>
+            </div>
+          </Card>
+
+          {/* Cost Calculator */}
+          <Card className="mb-8">
+            <h3 className="text-xl font-semibold mb-4">Cost Calculator</h3>
+            <p className="text-text-secondary mb-4">
+              Estimate costs for typical usage patterns
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="space-y-2">
+                <div className="font-semibold text-text-primary">Light Use</div>
+                <div className="text-text-tertiary">100K in / 50K out</div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-text-primary">
+                  Medium Use
+                </div>
+                <div className="text-text-tertiary">1M in / 500K out</div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-text-primary">Heavy Use</div>
+                <div className="text-text-tertiary">10M in / 5M out</div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Pricing Table */}
+          {filteredModels.length === 0 ? (
+            <Card>
+              <p className="text-center text-text-secondary py-8">
+                No models found in this price range. Try adjusting your filters.
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {filteredModels.map((model) => (
+                <Card key={model.id} hover>
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div className="md:col-span-3">
+                      <Link href={`/models/${model.id}`}>
+                        <h3 className="text-lg font-semibold text-text-primary hover:text-primary transition-colors">
+                          {model.name}
+                        </h3>
+                      </Link>
+                      {model.provider && (
+                        <p className="text-sm text-text-tertiary">
+                          {model.provider.name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-2 text-center">
+                      <div className="text-xs text-text-tertiary mb-1">
+                        Input
+                      </div>
+                      <div className="text-lg font-semibold text-text-primary">
+                        ${model.inputPricePerMillion}
+                      </div>
+                      <div className="text-xs text-text-tertiary">
+                        /M tokens
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2 text-center">
+                      <div className="text-xs text-text-tertiary mb-1">
+                        Output
+                      </div>
+                      <div className="text-lg font-semibold text-text-primary">
+                        ${model.outputPricePerMillion}
+                      </div>
+                      <div className="text-xs text-text-tertiary">
+                        /M tokens
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-5">
+                      <div className="text-xs text-text-tertiary mb-2">
+                        Estimated Cost
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <div className="text-text-primary font-medium">
+                            ${calculateCost(model, 100000, 50000).toFixed(3)}
+                          </div>
+                          <div className="text-xs text-text-tertiary">
+                            Light
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-text-primary font-medium">
+                            ${calculateCost(model, 1000000, 500000).toFixed(2)}
+                          </div>
+                          <div className="text-xs text-text-tertiary">
+                            Medium
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-text-primary font-medium">
+                            $
+                            {calculateCost(model, 10000000, 5000000).toFixed(2)}
+                          </div>
+                          <div className="text-xs text-text-tertiary">
+                            Heavy
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

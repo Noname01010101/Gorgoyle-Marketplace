@@ -1,56 +1,10 @@
 import Link from "next/link";
+import Header from "@/components/Header";
 
 export default function Home() {
-  const navItems = [
-    { href: "/models", label: "Models" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/capability-matching", label: "Matching" },
-    { href: "/benchmarks", label: "Benchmarks" },
-    { href: "/suggestions", label: "Suggestions" },
-    { href: "/api-check", label: "API" },
-  ];
-
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl">
-        <nav className="max-w-7xl mx-auto px-6 h-12 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="text-xl font-semibold">
-            AI Store
-          </Link>
-
-          {/* Navigation links */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-gray-300 hover:text-white transition-colors duration-200"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile menu button */}
-          <button className="md:hidden text-gray-300">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        </nav>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
