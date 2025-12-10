@@ -1,20 +1,29 @@
 import { initTRPC } from "@trpc/server";
 import BenchmarksService from "./benchmarksService";
 import z from "zod";
+import ModelQuery from "../model-catalog/model";
 
 const t = initTRPC.create();
 
 const benchmarksProcedure = t.procedure
   .input(
     z.object({
-      modelId: z.number(),
+      name: z.string(),
+      version: z.string(),
     })
   )
   .query(async ({ input }) => {
-    const modelId = input.modelId;
-
     try {
-      const benchmarks = await BenchmarksService.getBenchmarksForModel(modelId);
+      const model = await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+      if (!model) {
+        return { error: "Model not found" };
+      }
+      const benchmarks = await BenchmarksService.getBenchmarksForModel(
+        model.id
+      );
       return benchmarks;
     } catch (error) {
       return { error: "Failed to fetch benchmarks" };
@@ -24,14 +33,21 @@ const benchmarksProcedure = t.procedure
 const benchmarkSummaryProcedure = t.procedure
   .input(
     z.object({
-      modelId: z.number(),
+      name: z.string(),
+      version: z.string(),
     })
   )
   .query(async ({ input }) => {
-    const modelId = input.modelId;
     try {
+      const model = await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+      if (!model) {
+        return { error: "Model not found" };
+      }
       const summary = await BenchmarksService.getBenchmarkSummaryForModel(
-        modelId
+        model.id
       );
       if (!summary) {
         return { error: "No benchmark data found for model" };

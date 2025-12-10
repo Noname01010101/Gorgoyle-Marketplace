@@ -212,7 +212,11 @@ export default function CapabilityMatchingPage() {
                           {index + 1}
                         </div>
                         <div>
-                          <Link href={`/models/${result.model.id}`}>
+                          <Link
+                            href={`/models/${encodeURIComponent(
+                              result.model.name
+                            )}/${encodeURIComponent(result.model.version)}`}
+                          >
                             <h3 className="text-2xl font-semibold text-text-primary hover:text-primary transition-colors">
                               {result.model.name}
                             </h3>
@@ -279,7 +283,9 @@ export default function CapabilityMatchingPage() {
                       )}
                       <div>
                         <Link
-                          href={`/models/${result.model.id}`}
+                          href={`/models/${encodeURIComponent(
+                            result.model.name
+                          )}/${encodeURIComponent(result.model.version)}`}
                           className="btn-primary inline-block text-center"
                         >
                           View Details

@@ -14,6 +14,7 @@ interface Model {
   provider?: {
     name: string;
   };
+  version?: string;
 }
 
 interface BenchmarkSummary {
@@ -49,7 +50,8 @@ export default function BenchmarksPage() {
       const benchmarkPromises = modelsData.map(async (model: Model) => {
         try {
           const summary = await trpc.benchmarks.getModelBenchmarkSummary.query({
-            modelId: model.id,
+            name: model.name,
+            version: model.version ?? "",
           });
           return { modelId: model.id, summary };
         } catch {
@@ -161,7 +163,11 @@ export default function BenchmarksPage() {
                       <div className="space-y-4">
                         <div className="flex justify-between items-start">
                           <div>
-                            <Link href={`/models/${model.id}`}>
+                            <Link
+                              href={`/models/${encodeURIComponent(
+                                model.name
+                              )}/${encodeURIComponent(model.version ?? "")}`}
+                            >
                               <h3 className="text-2xl font-semibold text-text-primary hover:text-primary transition-colors">
                                 {model.name}
                               </h3>
@@ -203,7 +209,9 @@ export default function BenchmarksPage() {
 
                         <div className="pt-4 border-t border-border">
                           <Link
-                            href={`/models/${model.id}`}
+                            href={`/models/${encodeURIComponent(
+                              model.name
+                            )}/${encodeURIComponent(model.version ?? "")}`}
                             className="text-primary hover:text-primary-hover transition-colors text-sm"
                           >
                             View detailed benchmarks →

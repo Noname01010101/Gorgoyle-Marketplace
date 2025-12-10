@@ -136,7 +136,12 @@ export default function ModelsPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAndSortedModels.map((model) => (
-                <Link key={model.id} href={`/models/${model.id}`}>
+                <Link
+                  key={model.id}
+                  href={`/models/${encodeURIComponent(
+                    model.name
+                  )}/${encodeURIComponent(model.version)}`}
+                >
                   <Card hover className="h-full">
                     <div className="space-y-4">
                       <div>

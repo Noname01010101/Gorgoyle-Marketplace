@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 import Header from "@/components/Header";
 import Card from "@/components/Card";
 import LoadingState from "@/components/LoadingState";
@@ -48,12 +47,15 @@ interface Suggestion {
   similarityScore: number;
 }
 
-export default function ModelDetailPage({
-  params,
+export default function ModelDetailClient({
+  name,
+  version,
 }: {
-  params: { modelId: string };
+  name: string;
+  version: string;
 }) {
-  const modelId = parseInt(params.modelId);
+  const decodedName = name;
+  const decodedVersion = version;
 
   const [model, setModel] = useState<Model | null>(null);
   const [benchmarks, setBenchmarks] = useState<Benchmark[]>([]);
@@ -66,28 +68,30 @@ export default function ModelDetailPage({
 
   useEffect(() => {
     loadModelData();
-  }, [modelId]);
+  }, [decodedName, decodedVersion]);
 
   const loadModelData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const modelsData: any = await trpc.catalog.getModels.query({});
-      const benchmarksData: any = await trpc.benchmarks.getModelBenchmarks
-        .query({ modelId })
-        .catch(() => []);
-      const suggestionsData: any = await trpc.suggestions.getSuggestionsForModel
-        .query({ modelId })
-        .catch(() => ({ suggestions: [] }));
+      const modelData: any = await trpc.catalog.getModelByNameAndVersion
+        .query({ name: decodedName, version: decodedVersion })
+        .catch(() => null);
 
-      const foundModel = modelsData.find((m: Model) => m.id === modelId);
-      if (!foundModel) {
+      if (!modelData) {
         setError("Model not found");
         return;
       }
 
-      setModel(foundModel);
+      const benchmarksData: any = await trpc.benchmarks.getModelBenchmarks
+        .query({ name: decodedName, version: decodedVersion })
+        .catch(() => []);
+      const suggestionsData: any = await trpc.suggestions.getSuggestionsForModel
+        .query({ name: decodedName, version: decodedVersion })
+        .catch(() => ({ suggestions: [] }));
+
+      setModel(modelData);
       setBenchmarks(benchmarksData as any);
       setSuggestions((suggestionsData.suggestions as any) || []);
     } catch (err) {
@@ -310,7 +314,9 @@ export default function ModelDetailPage({
                   {suggestions.map((suggestion) => (
                     <Link
                       key={suggestion.model.id}
-                      href={`/models/${suggestion.model.id}`}
+                      href={`/models/${encodeURIComponent(
+                        suggestion.model.name
+                      )}/${encodeURIComponent(suggestion.model.version)}`}
                     >
                       <Card hover>
                         <div className="flex justify-between items-start mb-3">

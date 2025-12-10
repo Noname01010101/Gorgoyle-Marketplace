@@ -33,6 +33,15 @@ export const catalogRouter = t.router({
       }
       return await ProviderQuery.getAllProviders();
     }),
+
+  getModelByNameAndVersion: t.procedure
+    .input(z.object({ name: z.string(), version: z.string() }))
+    .query(async ({ input }) => {
+      return await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+    }),
 });
 
 export type CatalogRouter = typeof catalogRouter;

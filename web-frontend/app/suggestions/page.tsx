@@ -16,15 +16,15 @@ interface Model {
   provider?: {
     id: number;
     name: string;
-  };
+  } | null;
   modelPricings?: {
     inputPricePerMillion: any; // Prisma Decimal
     outputPricePerMillion: any; // Prisma Decimal
-  };
+  } | null;
   fields?: Array<{
     id: number;
     name: string;
-  }>;
+  }> | null;
   metadata?: any;
   capabilities?: any;
   modalities?: any;
@@ -33,8 +33,8 @@ interface Model {
 }
 
 export default function SuggestionsPage() {
-  const [models, setModels] = useState<Model[]>([]);
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [models, setModels] = useState<any[]>([]);
+  const [selectedModel, setSelectedModel] = useState<any>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
@@ -63,13 +63,14 @@ export default function SuggestionsPage() {
     }
   };
 
-  const handleSelectModel = async (model: Model) => {
+  const handleSelectModel = async (model: any) => {
     setSelectedModel(model);
     setLoadingSuggestions(true);
 
     try {
       const response = await trpc.suggestions.getSuggestionsForModel.query({
-        modelId: model.id,
+        name: model.name,
+        version: model.version,
       });
       setSuggestions(response.suggestions || []);
     } catch (err) {
@@ -143,7 +144,9 @@ export default function SuggestionsPage() {
                         )}
                       </div>
                       <Link
-                        href={`/models/${selectedModel.id}`}
+                        href={`/models/${encodeURIComponent(
+                          selectedModel.name
+                        )}/${encodeURIComponent(selectedModel.version)}`}
                         className="btn-secondary"
                       >
                         View Details
@@ -222,7 +225,13 @@ export default function SuggestionsPage() {
                           <div className="space-y-4">
                             <div className="flex justify-between items-start">
                               <div>
-                                <Link href={`/models/${suggestion.model.id}`}>
+                                <Link
+                                  href={`/models/${encodeURIComponent(
+                                    suggestion.model.name
+                                  )}/${encodeURIComponent(
+                                    suggestion.model.version
+                                  )}`}
+                                >
                                   <h4 className="text-xl font-semibold text-text-primary hover:text-primary transition-colors">
                                     {suggestion.model.name}
                                   </h4>
