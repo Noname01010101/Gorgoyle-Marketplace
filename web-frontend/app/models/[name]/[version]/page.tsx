@@ -4,13 +4,20 @@
 
 import ModelDetailClient from "./ModelDetailClient";
 
-export default function ModelDetailPage({
+export default async function ModelDetailPage({
   params,
 }: {
-  params: { name: string; version: string };
+  params:
+    | { name: string; version: string }
+    | Promise<{ name: string; version: string }>;
 }) {
-  const decodedName = decodeURIComponent(params.name);
-  const decodedVersion = decodeURIComponent(params.version);
+  // `params` can be a plain object (server component) or a Promise (client
+  // component context). Awaiting is safe in either case and ensures we always
+  // have the resolved values before decoding and passing to the client.
+  const resolvedParams = await params;
+
+  const decodedName = decodeURIComponent(resolvedParams.name ?? "");
+  const decodedVersion = decodeURIComponent(resolvedParams.version ?? "");
 
   return <ModelDetailClient name={decodedName} version={decodedVersion} />;
 }

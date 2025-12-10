@@ -113,7 +113,10 @@ export default function ModelDetailClient({
       if (!modelResp) {
         if (!isMountedRef.current) return;
         setError(
-          "Model not found — the requested model name/version does not exist."
+          `Model not found — the requested model name/version does not exist. Model response: ${JSON.stringify(
+            modelResp
+          )}.
+          name: ${name}, version: ${version}`
         );
         setModel(null);
         setBenchmarks([]);
