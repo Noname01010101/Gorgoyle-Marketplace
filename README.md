@@ -1,63 +1,59 @@
+---
+title: AI Commerce Store
+---
+
 # AI Commerce Store
 
-> The authoritative platform for AI model discovery, pricing, benchmarking, and capability matching.
+> Visual, modular platform for AI model discovery, pricing, benchmarking, and capability matching.
 
 ---
 
-## Index
-
-- [Platform Vision & Problem Statement](./docs/main.md)
-- [Backend Services Documentation](./docs/backendServices.md)
-- [Architecture Overview](#architecture-overview)
-- [Project Structure](#project-structure)
-- [Setup & Development](#setup--development)
-- [Testing & Quality](#testing--quality)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [Contact & Support](#contact--support)
+## Quick Navigation
+| Section                | Description                                 |
+|------------------------|---------------------------------------------|
+| [Vision & Problem](./docs/main.md)         | Platform goals, user value, solution         |
+| [Backend Services](./docs/backendServices.md) | API, data models, service catalogue          |
+| [Web Frontend Pages](./docs/web-frontend-pages.md) | UI, main pages, components, visuals         |
+| [API Services](./docs/api-services.md)     | Endpoints, usage, data models                |
+| [Setup Guide](./SETUP.md)                  | Install, run, environment, troubleshooting   |
+| [Troubleshooting & FAQ](./docs/troubleshooting.md) | Common issues, FAQ, support                 |
 
 ---
 
-## Architecture Overview
+## Visual Architecture
 
-The AI Commerce Store is a modular, enterprise-grade platform designed to:
-
-- Aggregate and normalize AI model metadata and pricing across providers
-- Enable fast, transparent model discovery and comparison
-- Provide robust APIs and a modern frontend for developers, businesses, and researchers
-
-**Core services:**
-
-- Model Catalog
-- Pricing Engine
-- Capability Matching
-- Benchmarks Engine
-- Equivalency/Suggestion Service
-
-See [Backend Services Documentation](./docs/backendServices.md) for full details.
+```visual
+┌─────────────┐   ┌─────────────┐   ┌─────────────┐
+│ Frontend    │ → │ Backend API │ → │ Database    │
+│ (Next.js)   │   │ (Express)   │   │ (MySQL)     │
+└─────────────┘   └─────────────┘   └─────────────┘
+```
 
 ---
 
 ## Project Structure
 
-```folder
-├── api/                # Backend services (Node.js/TypeScript, Express, Prisma)
-├── model-catalog-api/  # Standalone model catalog API (dev)
-├── pricing-api/        # Standalone pricing API (dev)
-├── web-frontend/       # Next.js frontend
-├── docs/               # Enterprise documentation (Markdown)
-├── docker-compose.yml  # Multi-service orchestration
-└── README.md           # Project entry point
+```text
+api/           # Backend (Node.js, Express, Prisma)
+web-frontend/  # Frontend (Next.js)
+docs/          # Docs (Markdown)
+docker-compose.yml
+SETUP.md
+README.md
 ```
 
 ---
 
-## Setup & Development
+## Get Started
 
-### Prerequisites
+See [Setup Guide](./SETUP.md) for step-by-step instructions.
 
-- Node.js 20+
-- Docker Desktop (for DB and service orchestration)
+---
+
+## Docs & Support
+
+- For doc updates, open a PR and tag the relevant team.
+- For issues, see [Troubleshooting & FAQ](./docs/troubleshooting.md).
 - VSCode (recommended)
 - Git
 

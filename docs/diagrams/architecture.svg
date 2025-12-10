@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300">
+  <style>
+    .box { fill:#f6f8fa; stroke:#c6cbd1; stroke-width:1; rx:8; }
+    .title { font: 16px 'Segoe UI', Roboto, sans-serif; fill:#111827; }
+    .sub { font:12px 'Segoe UI', Roboto, sans-serif; fill:#374151; }
+    .arrow { stroke:#6b7280; stroke-width:2; marker-end:url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7280" />
+    </marker>
+  </defs>
+
+  <!-- Frontend -->
+  <rect class="box" x="30" y="40" width="220" height="120" rx="10"/>
+  <text class="title" x="60" y="72">Frontend</text>
+  <text class="sub" x="60" y="94">Next.js (app dir)</text>
+  <text class="sub" x="60" y="112">Pages: /, /models, /pricing, /benchmarks</text>
+
+  <!-- API -->
+  <rect class="box" x="340" y="20" width="240" height="180" rx="10"/>
+  <text class="title" x="390" y="52">Backend API</text>
+  <text class="sub" x="390" y="74">Node.js, Express + tRPC</text>
+  <text class="sub" x="390" y="94">Routers: catalog, pricing, benchmarks, match, suggestions</text>
+
+  <!-- Database -->
+  <rect class="box" x="700" y="60" width="160" height="100" rx="10"/>
+  <text class="title" x="730" y="92">Database</text>
+  <text class="sub" x="730" y="112">MySQL (Prisma)</text>
+
+  <!-- arrows -->
+  <line class="arrow" x1="250" y1="100" x2="340" y2="100" />
+  <line class="arrow" x1="580" y1="100" x2="700" y2="100" />
+
+  <!-- footer -->
+  <text class="sub" x="20" y="280">Generated: 2025-12-10 — Simple architecture overview</text>
+</svg>

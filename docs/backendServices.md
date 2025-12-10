@@ -1,32 +1,31 @@
 
+---
+title: Backend Services
+---
+
 # Backend Services
 
-Purpose: concise reference and operational design for backend services powering the AI Commerce Store. This document is written to enterprise documentation standards: clear ownership, explicit interfaces, data models, SLAs, security controls, observability, and deployment guidance.
+Purpose: concise reference and operational design for backend services powering the AI Commerce Store.
 
-Table of contents
+This document is an index and short reference. Full details live in per-service files under `docs/services/` and runtime guidance is in `docs/development.md`.
 
-- Overview
-- Service Catalogue
-  - Model Catalog Service
-  - Pricing Engine
-  - Capability Matching
-  - Benchmarks Engine
-  - Equivalency / Suggestion Service
-- API contracts (example routes + schemas)
-- Data model (domain schemas)
-- Non-functional requirements (SLA, scale, availability)
-- Observability & Monitoring
-- Security & Compliance
-- Testing strategy
-- Deployment & CI/CD
-- Runbook & Operational Guidance
-- Change log & contacts
+---
+
+## Docs Navigation
+
+- [Platform Vision](./main.md) — Vision, problem, solution
+- [Web Frontend Pages](./web-frontend-pages.md) — UI, main pages, components
+- [API Services](./api-services.md) — Endpoints, usage, data models
+- [Setup Guide](../SETUP.md) — Install, run, environment
+- [Troubleshooting & FAQ](./troubleshooting.md) — Common issues and quick fixes
 
 ---
 
 ## Overview
 
-The backend comprises a set of focused services each responsible for a single domain: model metadata, pricing, capability mapping, benchmarks, and equivalency suggestions. Services are REST-first, are written in Node.js/TypeScript, use Prisma for data access, and are intended to be containerized for deployment.
+The backend is a small set of focused services. Each service is responsible for a single domain: model metadata, pricing, capability matching, benchmarks, or suggestions.
+
+Services are implemented in Node.js/TypeScript, use Prisma for data access, and are containerized for deployment.
 
 Goals
 
@@ -59,9 +58,14 @@ Primary routes (examples)
 - `POST /catalog/models` — create model (internal/admin)
 - `PUT /catalog/models/:id` — update model
 
+
 Data highlights
 
-- Fields: `id`, `name`, `providerId`, `releaseDate`, `deprecated`, `capabilities[]`, `modalities[]`, `supportedFormats[]`, `languages[]`, `pricingReference` (pointer to Pricing Engine), `metrics[]` (benchmark ids)
+- Fields (model):
+    - `id`, `name`, `providerId`, `releaseDate`, `deprecated`
+    - `capabilities[]`, `modalities[]`, `supportedFormats[]`, `languages[]`
+    - `pricingReference` (pointer to Pricing Engine)
+    - `metrics[]` (benchmark ids)
 
 Ownership: Platform / Data Team
 
@@ -83,9 +87,12 @@ Primary routes (examples)
 - `GET /pricing/compare?modelA=...&modelB=...` — cost equivalence
 - `POST /pricing/models/:modelId` — ingest/update price (internal)
 
+
 Data highlights
 
-- Fields: `modelId`, `currency`, `unit` (token/request), `price`, `effectiveAt`, `normalizedPerMillionTokens`
+- Fields (pricing):
+    - `modelId`, `currency`, `unit` (token/request)
+    - `price`, `effectiveAt`, `normalizedPerMillionTokens`
 
 Ownership: Pricing Team
 
@@ -293,48 +300,26 @@ Containers
 
 CI
 
-- Pipeline steps: install, lint, typecheck, unit tests, build image, push image to registry, deploy to staging.
+## Overview (short)
 
-CD
+The backend is composed of focused services. For readability, detailed contracts, runbooks, and appendices
+are split into per-service pages under `docs/services/`.
 
-- Blue/green or canary deploys for major changes; automatic rollback on increased error budget.
+See `docs/development.md` for run and test guidance.
 
-Database migrations
+### Services (links)
 
-- Migrations via Prisma; run in a controlled step with backup and migration validation.
+- [Model Catalog Service](./services/model-catalog.md)
+- [Pricing Engine](./services/pricing.md)
+- [Capability Matching](./services/capability-matching.md)
+- [Benchmarks Engine](./services/benchmarks.md)
+- [Suggestions / Equivalency](./services/suggestions.md)
 
----
+### Operational & non-functional guidance
 
-## Runbook & Operational Guidance
+- Observability, security, testing and runbook notes are summarized here and expanded in `docs/development.md` and on the team wiki (internal).
 
-Common incidents
+For the full examples (payloads, data model, and runbook steps), see `docs/development.md` and the individual service pages under
+`docs/services/`.
 
-- Pricing ingestion failure: check ingestion logs, re-run ingestion, verify normalization.
-- Catalog inconsistency: check event delivery pipeline; provide manual correction instructions.
-
-Maintenance tasks
-
-- Rotate secrets every 90 days, purge stale models older than X with review.
-
-Contact & escalation
-
-- Pager: Platform on-call rota
-- Slack: #platform-ops
-- Pager duty: Platform primary -> escalation to SRE lead
-
----
-
-## Change log
-
-- 2025-12-06 v1.0.0 — Initial enterprise rewrite by Platform Engineering Team.
-
----
-
-## Appendix
-
-- Recommendations: publish an OpenAPI spec for each service; add an architecture diagram in the `docs/diagrams` folder (SVG/PNG + source file).
-- Keep `docs/backendServices.md` synced with any architecture or runbooks.
-
----
-
-For questions or to propose doc updates, open a PR against `main` and tag `@Platform-Engineering`.
+Catalog inconsistency: check the event delivery pipeline and follow runbook steps for manual correction.

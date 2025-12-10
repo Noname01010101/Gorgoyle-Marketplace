@@ -45,9 +45,14 @@ Users can quickly answer:
 
 ## Related Documentation
 
-- [Backend Services](./backendServices.md)
-- [Web Frontend Pages](./web-frontend-pages.md)
+| Doc                       | Description                       |
+|---------------------------|-----------------------------------|
+| [Backend Services](./backendServices.md)      | API, data models, service catalogue |
+| [Web Frontend Pages](./web-frontend-pages.md) | UI, main pages, components, visuals |
+| [API Services](./api-services.md)             | Endpoints, usage, data models       |
+| [Setup Guide](../SETUP.md)                    | Install, run, environment           |
+| [Troubleshooting & FAQ](./troubleshooting.md) | Common issues, FAQ, support         |
 
 ---
 
-For questions or to propose doc updates, open a PR and tag `@Product-Team`.
+For questions or doc updates, open a PR and tag `@Product-Team`.

@@ -1,3 +1,7 @@
+---
+title: Web Frontend Implementation
+---
+
 # Web Frontend Implementation
 
 ## Overview
