@@ -1,35 +1,47 @@
-import express from "express";
+import { initTRPC } from "@trpc/server";
+import { z } from "zod";
 import FieldsQuery from "./fields";
 import ModelQuery from "./model";
 import ProviderQuery from "./provider";
 
-const catalogRouter = express.Router();
+const t = initTRPC.create();
 
-catalogRouter.get("/fields", async (req, res) => {
-  if (req.query["name"]) {
-    res.json(await FieldsQuery.getFieldByName(String(req.query["name"])));
-    return;
-  }
+export const catalogRouter = t.router({
+  getFields: t.procedure
+    .input(z.object({ name: z.string().optional() }))
+    .query(async ({ input }) => {
+      if (input.name) {
+        return await FieldsQuery.getFieldByName(input.name);
+      }
+      return await FieldsQuery.getAllFields();
+    }),
 
-  res.json(await FieldsQuery.getAllFields());
+  getModels: t.procedure
+    .input(z.object({ name: z.string().optional() }))
+    .query(async ({ input }) => {
+      if (input.name) {
+        return await ModelQuery.getModelsByName(input.name);
+      }
+      return await ModelQuery.getAllModels();
+    }),
+
+  getProviders: t.procedure
+    .input(z.object({ name: z.string().optional() }))
+    .query(async ({ input }) => {
+      if (input.name) {
+        return await ProviderQuery.getProviderByName(input.name);
+      }
+      return await ProviderQuery.getAllProviders();
+    }),
+
+  getModelByNameAndVersion: t.procedure
+    .input(z.object({ name: z.string(), version: z.string() }))
+    .query(async ({ input }) => {
+      return await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+    }),
 });
 
-catalogRouter.get("/models", async (req, res) => {
-  if (req.query["name"]) {
-    res.json(await ModelQuery.getModelsByName(String(req.query["name"])));
-    return;
-  }
-
-  res.json(await ModelQuery.getAllModels());
-});
-
-catalogRouter.get("/providers", async (req, res) => {
-  if (req.query["name"]) {
-    res.json(await ProviderQuery.getProviderByName(String(req.query["name"])));
-    return;
-  }
-
-  res.json(await ProviderQuery.getAllProviders());
-});
-
-export default catalogRouter;
+export type CatalogRouter = typeof catalogRouter;

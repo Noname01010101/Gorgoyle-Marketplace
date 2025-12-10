@@ -1,24 +1,34 @@
-import express from "express";
-import CapabilityMatchingService, {
-  CapabilityMatchRequest,
-} from "./capabilityMatchingService";
+import CapabilityMatchingService from "./capabilityMatchingService";
+import { initTRPC } from "@trpc/server";
+import { z } from "zod";
 
-const capabilityMatchingRouter = express.Router();
+const t = initTRPC.create();
 
-capabilityMatchingRouter.get("/", async (req, res) => {
-  const body = req.body as Partial<CapabilityMatchRequest> | undefined;
-
-  try {
-    const results = await CapabilityMatchingService.matchModelsForTask({
-      taskDescription: body?.taskDescription ?? "",
-      constraints: body?.constraints,
-      preferences: body?.preferences,
-    });
-
-    res.json({ results });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to match models for task" });
-  }
+export const capabilityMatchingRouter = t.router({
+  matchModelsForTask: t.procedure
+    .input(
+      z.object({
+        taskDescription: z.string(),
+        constraints: z
+          .object({
+            maxPricePerMillionTokens: z.number().optional(),
+          })
+          .optional(),
+        preferences: z
+          .object({
+            costWeight: z.number().min(0).max(1).optional(),
+          })
+          .optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const results = await CapabilityMatchingService.matchModelsForTask({
+        taskDescription: input.taskDescription,
+        constraints: input.constraints,
+        preferences: input.preferences,
+      });
+      return { results };
+    }),
 });
 
-export default capabilityMatchingRouter;
+export type CapabilityMatchingRouter = typeof capabilityMatchingRouter;

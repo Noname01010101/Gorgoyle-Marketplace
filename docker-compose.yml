@@ -1,8 +1,7 @@
 
-
 services:
   db:
-    image: mysql
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_pwd
@@ -15,7 +14,7 @@ services:
       - db-volume:/var/lib/mysql
   api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile.dev
     environment:
       PORT: 1092

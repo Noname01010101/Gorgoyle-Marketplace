@@ -67,3 +67,10 @@ model Benchmark {
     runAt    DateTime
     metadata Json?
 }
+
+
+enum BenchmarkType {
+    MMLU
+    ACCURACY
+    EFFICIENCY
+}

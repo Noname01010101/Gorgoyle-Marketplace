@@ -1,45 +1,67 @@
-import express from "express";
+import { initTRPC } from "@trpc/server";
 import BenchmarksService from "./benchmarksService";
+import z from "zod";
+import ModelQuery from "../model-catalog/model";
 
-const benchmarksRouter = express.Router();
+const t = initTRPC.create();
 
-// GET /benchmarks/models/:modelId
-benchmarksRouter.get("/models/:modelId", async (req, res) => {
-  const modelId = Number(req.params.modelId);
-
-  if (Number.isNaN(modelId)) {
-    res.status(400).json({ error: "modelId must be a number" });
-    return;
-  }
-
-  try {
-    const benchmarks = await BenchmarksService.getBenchmarksForModel(modelId);
-    res.json(benchmarks);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch benchmarks" });
-  }
-});
-
-// GET /benchmarks/models/:modelId/summary
-benchmarksRouter.get("/models/:modelId/summary", async (req, res) => {
-  const modelId = Number(req.params.modelId);
-
-  if (Number.isNaN(modelId)) {
-    res.status(400).json({ error: "modelId must be a number" });
-    return;
-  }
-
-  try {
-    const summary = await BenchmarksService.getBenchmarkSummaryForModel(modelId);
-    if (!summary) {
-      res.status(404).json({ error: "No benchmark data found for model" });
-      return;
+const benchmarksProcedure = t.procedure
+  .input(
+    z.object({
+      name: z.string(),
+      version: z.string(),
+    })
+  )
+  .query(async ({ input }) => {
+    try {
+      const model = await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+      if (!model) {
+        return { error: "Model not found" };
+      }
+      const benchmarks = await BenchmarksService.getBenchmarksForModel(
+        model.id
+      );
+      return benchmarks;
+    } catch (error) {
+      return { error: "Failed to fetch benchmarks" };
     }
+  });
 
-    res.json(summary);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch benchmark summary" });
-  }
+const benchmarkSummaryProcedure = t.procedure
+  .input(
+    z.object({
+      name: z.string(),
+      version: z.string(),
+    })
+  )
+  .query(async ({ input }) => {
+    try {
+      const model = await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+      if (!model) {
+        return { error: "Model not found" };
+      }
+      const summary = await BenchmarksService.getBenchmarkSummaryForModel(
+        model.id
+      );
+      if (!summary) {
+        return { error: "No benchmark data found for model" };
+      }
+
+      return summary;
+    } catch (error: Error | any) {
+      return { error: "Failed to fetch benchmark summary" };
+    }
+  });
+
+export const benchmarksRouter = t.router({
+  getModelBenchmarks: benchmarksProcedure,
+  getModelBenchmarkSummary: benchmarkSummaryProcedure,
 });
 
-export default benchmarksRouter;
+export type BenchmarksRouter = typeof benchmarksRouter;

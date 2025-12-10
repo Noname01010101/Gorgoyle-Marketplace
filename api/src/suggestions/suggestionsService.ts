@@ -5,6 +5,7 @@ const prismaClient = new PrismaClient();
 export interface SuggestionResult {
   modelId: number;
   modelName: string;
+  modelVersion: string | null;
   providerName: string;
   similarityScore: number;
   costDeltaPerMillionTokens: number | null;
@@ -19,7 +20,9 @@ function toStringArray(value: unknown): string[] {
   return [];
 }
 
-function decimalToNumber(value: Prisma.Decimal | number | null | undefined): number | null {
+function decimalToNumber(
+  value: Prisma.Decimal | number | null | undefined
+): number | null {
   if (value == null) return null;
   if (typeof value === "number") return value;
   return value.toNumber();
@@ -44,7 +47,9 @@ function computeJaccardSimilarity(a: string[], b: string[]): number {
  * existing catalog + pricing + benchmarks data.
  */
 class SuggestionsService {
-  static async getSuggestionsForModel(modelId: number): Promise<SuggestionResult[]> {
+  static async getSuggestionsForModel(
+    modelId: number
+  ): Promise<SuggestionResult[]> {
     const targetModel = await prismaClient.aIModel.findUnique({
       where: { id: modelId },
       include: {
@@ -57,9 +62,12 @@ class SuggestionsService {
       throw new Error("Model not found");
     }
 
-    const targetCapabilities = toStringArray(targetModel.capabilities as unknown);
+    const targetCapabilities = toStringArray(
+      targetModel.capabilities as unknown
+    );
     const targetCost = decimalToNumber(
-      targetModel.modelPricings.normalizedPerMillion ?? targetModel.modelPricings.inputPricePerMillion
+      targetModel.modelPricings.normalizedPerMillion ??
+        targetModel.modelPricings.inputPricePerMillion
     );
     const targetAvgBenchmark =
       targetModel.benchmarks.length > 0
@@ -78,7 +86,9 @@ class SuggestionsService {
     const suggestions: SuggestionResult[] = [];
 
     for (const candidate of otherModels) {
-      const candidateCapabilities = toStringArray(candidate.capabilities as unknown);
+      const candidateCapabilities = toStringArray(
+        candidate.capabilities as unknown
+      );
       const capabilitySimilarity = computeJaccardSimilarity(
         targetCapabilities,
         candidateCapabilities
@@ -95,7 +105,9 @@ class SuggestionsService {
           : null;
 
       const costDelta =
-        targetCost != null && candidateCost != null ? candidateCost - targetCost : null;
+        targetCost != null && candidateCost != null
+          ? candidateCost - targetCost
+          : null;
       const benchmarkDelta =
         targetAvgBenchmark != null && candidateAvgBenchmark != null
           ? candidateAvgBenchmark - targetAvgBenchmark
@@ -103,9 +115,12 @@ class SuggestionsService {
 
       // Simple combined score: prioritize capability similarity, then adjust
       // slightly by cost and benchmark deltas.
-      const costComponent = costDelta != null ? -Math.tanh(costDelta / 10) * 0.2 : 0;
-      const benchmarkComponent = benchmarkDelta != null ? Math.tanh(benchmarkDelta / 10) * 0.2 : 0;
-      const similarityScore = capabilitySimilarity * 0.6 + costComponent + benchmarkComponent;
+      const costComponent =
+        costDelta != null ? -Math.tanh(costDelta / 10) * 0.2 : 0;
+      const benchmarkComponent =
+        benchmarkDelta != null ? Math.tanh(benchmarkDelta / 10) * 0.2 : 0;
+      const similarityScore =
+        capabilitySimilarity * 0.6 + costComponent + benchmarkComponent;
 
       let explanation = "similar capability profile";
       if (costDelta != null && costDelta < 0) {
@@ -117,6 +132,7 @@ class SuggestionsService {
       suggestions.push({
         modelId: candidate.id,
         modelName: candidate.name,
+        modelVersion: candidate.version ?? null,
         providerName: candidate.providerName,
         similarityScore,
         costDeltaPerMillionTokens: costDelta,

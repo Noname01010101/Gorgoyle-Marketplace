@@ -1,23 +1,26 @@
-import express from "express";
+import { initTRPC } from "@trpc/server";
+import { z } from "zod";
 import SuggestionsService from "./suggestionsService";
+import ModelQuery from "../model-catalog/model";
 
-const suggestionsRouter = express.Router();
+const t = initTRPC.create();
 
-// GET /suggestions/:modelId
-suggestionsRouter.get("/:modelId", async (req, res) => {
-  const modelId = Number(req.params.modelId);
-
-  if (Number.isNaN(modelId)) {
-    res.status(400).json({ error: "modelId must be a number" });
-    return;
-  }
-
-  try {
-    const suggestions = await SuggestionsService.getSuggestionsForModel(modelId);
-    res.json({ suggestions });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch suggestions for model" });
-  }
+export const suggestionsRouter = t.router({
+  getSuggestionsForModel: t.procedure
+    .input(z.object({ name: z.string(), version: z.string() }))
+    .query(async ({ input }) => {
+      const model = await ModelQuery.getModelByNameAndVersion(
+        input.name,
+        input.version
+      );
+      if (!model) {
+        return { suggestions: [], error: "Model not found" };
+      }
+      const suggestions = await SuggestionsService.getSuggestionsForModel(
+        model.id
+      );
+      return { suggestions };
+    }),
 });
 
-export default suggestionsRouter;
+export type SuggestionsRouter = typeof suggestionsRouter;

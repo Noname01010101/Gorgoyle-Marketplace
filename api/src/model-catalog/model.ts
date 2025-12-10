@@ -23,6 +23,16 @@ class ModelQuery {
     });
     return res;
   }
+
+  static async getModelByNameAndVersion(name: string, version: string) {
+    const res = await client.aIModel.findFirst({
+      where: {
+        name,
+        version,
+      },
+    });
+    return res;
+  }
 }
 
 export default ModelQuery;
