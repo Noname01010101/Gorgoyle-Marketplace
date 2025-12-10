@@ -446,58 +446,71 @@ export default function ModelDetailClient({
                 </Card>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {suggestions.map((suggestion) => (
-                    <Link
-                      key={suggestion.model.id}
-                      href={`/models/${encodeURIComponent(
-                        suggestion.model.name
-                      )}/${encodeURIComponent(suggestion.model.version)}`}
-                    >
-                      <Card hover>
-                        <div className="flex justify-between items-start mb-3">
-                          <h3 className="text-xl font-semibold">
-                            {suggestion.model.name}
-                          </h3>
-                          <span className="text-sm text-primary font-medium">
-                            {(suggestion.similarityScore * 100).toFixed(0)}%
-                            match
-                          </span>
-                        </div>
-                        <p className="text-text-secondary mb-4">
-                          {suggestion.reason}
-                        </p>
-                        <div className="space-y-2 text-sm">
-                          {suggestion.model.modelPricings && (
-                            <div className="flex justify-between">
-                              <span className="text-text-tertiary">Input:</span>
-                              <span className="text-text-primary">
-                                {suggestion.model.modelPricings
-                                  .inputPricePerMillion != null
-                                  ? `$${formatPrice(
-                                      suggestion.model.modelPricings
-                                        .inputPricePerMillion
-                                    )}/M`
-                                  : "N/A"}
-                              </span>
-                            </div>
-                          )}
-                          {suggestion.model.metadata?.contextWindowTokens && (
-                            <div className="flex justify-between">
-                              <span className="text-text-tertiary">
-                                Context:
-                              </span>
-                              <span className="text-text-primary">
-                                {formatCount(
-                                  suggestion.model.metadata.contextWindowTokens
-                                )}{" "}
-                                tokens
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-                    </Link>
-                  ))}
+                  {suggestions.map((suggestion) => {
+                    const href =
+                      "/models/" +
+                      encodeURIComponent(suggestion.model.name) +
+                      "/" +
+                      encodeURIComponent(suggestion.model.version);
+                    // Debug the generated href in the browser console
+                    // so we can inspect the exact value at runtime.
+                    // This does not run on the server.
+                    if (typeof window !== "undefined") {
+                      // eslint-disable-next-line no-console
+                      console.debug("Suggestion link:", href, suggestion.model);
+                    }
+
+                    return (
+                      <Link key={suggestion.model.id} href={href}>
+                        <Card hover data-href={href}>
+                          <div className="flex justify-between items-start mb-3">
+                            <h3 className="text-xl font-semibold">
+                              {suggestion.model.name}
+                            </h3>
+                            <span className="text-sm text-primary font-medium">
+                              {(suggestion.similarityScore * 100).toFixed(0)}%
+                              match
+                            </span>
+                          </div>
+                          <p className="text-text-secondary mb-4">
+                            {suggestion.reason}
+                          </p>
+                          <div className="space-y-2 text-sm">
+                            {suggestion.model.modelPricings && (
+                              <div className="flex justify-between">
+                                <span className="text-text-tertiary">
+                                  Input:
+                                </span>
+                                <span className="text-text-primary">
+                                  {suggestion.model.modelPricings
+                                    .inputPricePerMillion != null
+                                    ? `$${formatPrice(
+                                        suggestion.model.modelPricings
+                                          .inputPricePerMillion
+                                      )}/M`
+                                    : "N/A"}
+                                </span>
+                              </div>
+                            )}
+                            {suggestion.model.metadata?.contextWindowTokens && (
+                              <div className="flex justify-between">
+                                <span className="text-text-tertiary">
+                                  Context:
+                                </span>
+                                <span className="text-text-primary">
+                                  {formatCount(
+                                    suggestion.model.metadata
+                                      .contextWindowTokens
+                                  )}{" "}
+                                  tokens
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </Card>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
