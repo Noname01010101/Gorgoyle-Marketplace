@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import Card from "@/components/Card";
 import LoadingState from "@/components/LoadingState";
@@ -12,21 +12,21 @@ interface Model {
   id: number;
   name: string;
   version: string;
-  providerName: string;
+  providerName?: string;
   description?: string;
   provider?: {
     id: number;
     name: string;
-  };
+  } | null;
   modelPricings?: {
-    inputPricePerMillion: any; // Prisma Decimal
-    outputPricePerMillion: any; // Prisma Decimal
-  };
+    inputPricePerMillion?: any; // Prisma Decimal or string
+    outputPricePerMillion?: any; // Prisma Decimal or string
+  } | null;
   fields?: Array<{
     id: number;
     name: string;
   }>;
-  metadata?: any;
+  metadata?: Record<string, any> | null;
   capabilities?: any;
   modalities?: any;
   supportedFormats?: any;
@@ -35,7 +35,7 @@ interface Model {
 
 interface Benchmark {
   id: number;
-  modelId: number;
+  modelId?: number;
   category: string;
   score: number;
   maxScore: number;
@@ -43,7 +43,7 @@ interface Benchmark {
 
 interface Suggestion {
   model: Model;
-  reason: string;
+  reason?: string;
   similarityScore: number;
 }
 
@@ -54,9 +54,6 @@ export default function ModelDetailClient({
   name: string;
   version: string;
 }) {
-  const decodedName = name;
-  const decodedVersion = version;
-
   const [model, setModel] = useState<Model | null>(null);
   const [benchmarks, setBenchmarks] = useState<Benchmark[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -65,46 +62,171 @@ export default function ModelDetailClient({
   const [activeTab, setActiveTab] = useState<
     "overview" | "benchmarks" | "similar"
   >("overview");
+  const isMountedRef = useRef(true);
 
-  useEffect(() => {
-    loadModelData();
-  }, [decodedName, decodedVersion]);
+  // Helpers to safely parse numbers/decimals coming from API
+  const safeNumber = (v: any, fallback = 0) => {
+    if (v == null) return fallback;
+    if (typeof v === "number") return v;
+    if (typeof v === "string") {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+    if (typeof v === "object") {
+      try {
+        // @ts-ignore
+        if (typeof v.toNumber === "function") return v.toNumber();
+        const s = String(v);
+        const n = Number(s);
+        return Number.isFinite(n) ? n : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+    return fallback;
+  };
+
+  const formatCount = (v: any) => {
+    const n = Math.round(safeNumber(v, 0));
+    try {
+      return n.toLocaleString();
+    } catch (_) {
+      return String(n);
+    }
+  };
+
+  const formatPrice = (v: any) => {
+    const n = safeNumber(v, NaN);
+    if (!Number.isFinite(n)) return "N/A";
+    return n.toFixed(2);
+  };
 
   const loadModelData = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
-
-      const modelData: any = await trpc.catalog.getModelByNameAndVersion
-        .query({ name: decodedName, version: decodedVersion })
-        .catch(() => null);
-
-      if (!modelData) {
-        setError("Model not found");
+      const modelResp: any = await trpc.catalog.getModelByNameAndVersion.query({
+        name,
+        version,
+      });
+      if (!modelResp) {
+        if (!isMountedRef.current) return;
+        setError(
+          "Model not found — the requested model name/version does not exist."
+        );
+        setModel(null);
+        setBenchmarks([]);
+        setSuggestions([]);
+        setLoading(false);
         return;
       }
 
-      const benchmarksData: any = await trpc.benchmarks.getModelBenchmarks
-        .query({ name: decodedName, version: decodedVersion })
-        .catch(() => []);
-      const suggestionsData: any = await trpc.suggestions.getSuggestionsForModel
-        .query({ name: decodedName, version: decodedVersion })
-        .catch(() => ({ suggestions: [] }));
+      // Fetch supporting data (sequential await typed as `any` to avoid
+      // TypeScript's excessively deep type instantiation when using the
+      // tRPC client types inside Promise.all). Results are normalized
+      // at runtime below.
+      const benchResp = (await trpc.benchmarks.getModelBenchmarks
+        .query({ name, version })
+        .catch((e) => {
+          console.error("Failed fetching benchmarks:", e);
+          return [];
+        })) as any;
 
-      setModel(modelData);
-      setBenchmarks(benchmarksData as any);
-      setSuggestions((suggestionsData.suggestions as any) || []);
-    } catch (err) {
-      setError("Failed to load model details");
-      console.error(err);
+      const suggResp = (await trpc.suggestions.getSuggestionsForModel
+        .query({ name, version })
+        .catch((e) => {
+          console.error("Failed fetching suggestions:", e);
+          return { suggestions: [] };
+        })) as any;
+
+      if (!isMountedRef.current) return;
+
+      setModel(modelResp as Model);
+
+      // Normalize benchmarks response (accept array or { benchmarks: [] })
+      const benchAny = benchResp as any;
+      const benchArray: Benchmark[] = Array.isArray(benchAny)
+        ? (benchAny as Benchmark[])
+        : Array.isArray(benchAny?.benchmarks)
+        ? benchAny.benchmarks
+        : [];
+      setBenchmarks(benchArray);
+
+      // Normalize suggestions: support both shapes:
+      // - Array of { model: {...}, reason, similarityScore }
+      // - Array of flattened suggestion objects { modelId, modelName, explanation, similarityScore }
+      // - Or wrapper { suggestions: [...] }
+      const suggAny = suggResp as any;
+      let rawSuggestions: any[] = [];
+      if (Array.isArray(suggAny)) rawSuggestions = suggAny;
+      else if (Array.isArray(suggAny?.suggestions))
+        rawSuggestions = suggAny.suggestions;
+      else rawSuggestions = [];
+
+      const mappedSuggestions: Suggestion[] = rawSuggestions
+        .map((s: any) => {
+          if (s == null) return null as any;
+          if (s.model) {
+            return {
+              model: s.model as Model,
+              reason: s.reason ?? s.explanation ?? "",
+              similarityScore: safeNumber(s.similarityScore, 0),
+            } as Suggestion;
+          }
+
+          // Flattened suggestion shape -> convert to Suggestion
+          const builtModel: Model = {
+            id: safeNumber(s.modelId, -1),
+            name: s.modelName ?? s.model?.name ?? "",
+            version: s.modelVersion ?? s.model?.version ?? "",
+            provider: s.providerName
+              ? { id: -1, name: s.providerName }
+              : s.model?.provider ?? null,
+            description: s.description ?? s.model?.description ?? undefined,
+            modelPricings:
+              s.inputPricePerMillion != null || s.outputPricePerMillion != null
+                ? {
+                    inputPricePerMillion: s.inputPricePerMillion ?? undefined,
+                    outputPricePerMillion: s.outputPricePerMillion ?? undefined,
+                  }
+                : s.model?.modelPricings ?? null,
+            metadata: s.metadata ?? s.model?.metadata ?? null,
+          } as Model;
+
+          return {
+            model: builtModel,
+            reason: s.explanation ?? s.reason ?? "",
+            similarityScore: safeNumber(s.similarityScore, 0),
+          } as Suggestion;
+        })
+        .filter(Boolean) as Suggestion[];
+
+      setSuggestions(mappedSuggestions);
+    } catch (err: any) {
+      console.error("Error loading model details:", err);
+      if (!isMountedRef.current) return;
+      const message =
+        err?.message || "Unknown error while loading model details.";
+      setError(`Failed to load model details — ${message}`);
     } finally {
+      if (!isMountedRef.current) return;
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    isMountedRef.current = true;
+    loadModelData();
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [name, version]);
+
   if (loading) return <LoadingState message="Loading model details..." />;
   if (error) return <ErrorState message={error} onRetry={loadModelData} />;
-  if (!model) return <ErrorState message="Model not found" />;
+  if (!model)
+    return <ErrorState message="Model not found" onRetry={loadModelData} />;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -168,7 +290,7 @@ export default function ModelDetailClient({
                             Context Window:
                           </span>
                           <span className="text-text-primary font-medium">
-                            {model.metadata.contextWindowTokens.toLocaleString()}{" "}
+                            {formatCount(model.metadata.contextWindowTokens)}{" "}
                             tokens
                           </span>
                         </div>
@@ -179,8 +301,7 @@ export default function ModelDetailClient({
                             Max Output:
                           </span>
                           <span className="text-text-primary font-medium">
-                            {model.metadata.maxOutputTokens.toLocaleString()}{" "}
-                            tokens
+                            {formatCount(model.metadata.maxOutputTokens)} tokens
                           </span>
                         </div>
                       )}
@@ -207,8 +328,11 @@ export default function ModelDetailClient({
                         </span>
                         <span className="text-text-primary font-medium">
                           $
-                          {model.modelPricings.inputPricePerMillion?.toString() ||
-                            "N/A"}
+                          {model.modelPricings.inputPricePerMillion != null
+                            ? formatPrice(
+                                model.modelPricings.inputPricePerMillion
+                              )
+                            : "N/A"}
                           /M
                         </span>
                       </div>
@@ -218,28 +342,36 @@ export default function ModelDetailClient({
                         </span>
                         <span className="text-text-primary font-medium">
                           $
-                          {model.modelPricings.outputPricePerMillion?.toString() ||
-                            "N/A"}
+                          {model.modelPricings.outputPricePerMillion != null
+                            ? formatPrice(
+                                model.modelPricings.outputPricePerMillion
+                              )
+                            : "N/A"}
                           /M
                         </span>
                       </div>
-                      {model.modelPricings.inputPricePerMillion &&
-                        model.modelPricings.outputPricePerMillion && (
+                      {model.modelPricings.inputPricePerMillion != null &&
+                        model.modelPricings.outputPricePerMillion != null && (
                           <div className="flex justify-between pt-3 border-t border-border">
                             <span className="text-text-tertiary">
                               Est. 1M tokens:
                             </span>
                             <span className="text-text-primary font-bold">
                               $
-                              {(
-                                (parseFloat(
-                                  model.modelPricings.inputPricePerMillion.toString()
-                                ) +
-                                  parseFloat(
-                                    model.modelPricings.outputPricePerMillion.toString()
-                                  )) /
-                                2
-                              ).toFixed(2)}
+                              {(() => {
+                                const inP = safeNumber(
+                                  model.modelPricings?.inputPricePerMillion,
+                                  NaN
+                                );
+                                const outP = safeNumber(
+                                  model.modelPricings?.outputPricePerMillion,
+                                  NaN
+                                );
+                                const avg = (inP + outP) / 2;
+                                return Number.isFinite(avg)
+                                  ? avg.toFixed(2)
+                                  : "N/A";
+                              })()}
                             </span>
                           </div>
                         )}
@@ -336,10 +468,13 @@ export default function ModelDetailClient({
                             <div className="flex justify-between">
                               <span className="text-text-tertiary">Input:</span>
                               <span className="text-text-primary">
-                                $
-                                {suggestion.model.modelPricings.inputPricePerMillion?.toString() ||
-                                  "N/A"}
-                                /M
+                                {suggestion.model.modelPricings
+                                  .inputPricePerMillion != null
+                                  ? `$${formatPrice(
+                                      suggestion.model.modelPricings
+                                        .inputPricePerMillion
+                                    )}/M`
+                                  : "N/A"}
                               </span>
                             </div>
                           )}
@@ -349,7 +484,9 @@ export default function ModelDetailClient({
                                 Context:
                               </span>
                               <span className="text-text-primary">
-                                {suggestion.model.metadata.contextWindowTokens.toLocaleString()}{" "}
+                                {formatCount(
+                                  suggestion.model.metadata.contextWindowTokens
+                                )}{" "}
                                 tokens
                               </span>
                             </div>
