@@ -10,7 +10,8 @@
     "test": "vitest",
     "host": "node ./dist/host.js",
     "seed": "tsx prisma/seed.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "docker:dev": "cd ../ && docker-compose up -d && docker exec ai-commerce-store-api-1 npx prisma db push && docker exec ai-commerce-store-api-1 npm run seed"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
