@@ -3,6 +3,7 @@ services:
   db:
     image: mysql:8.0
     restart: always
+    container_name: database-api
     environment:
       MYSQL_ROOT_PASSWORD: root_pwd
       MYSQL_DATABASE: db
@@ -13,6 +14,7 @@ services:
     volumes:
       - db-volume:/var/lib/mysql
   api:
+    container_name: api-service
     build:
       context: ./api
       dockerfile: Dockerfile.dev

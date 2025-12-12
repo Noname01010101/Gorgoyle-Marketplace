@@ -3,6 +3,13 @@ import { PrismaClient, Prisma } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  // Clean slate: delete data from dependent tables first to avoid FK errors
+  await prisma.benchmark.deleteMany();
+  await prisma.aIModel.deleteMany();
+  await prisma.modelPricing.deleteMany();
+  await prisma.fields.deleteMany();
+  await prisma.aIProvider.deleteMany();
+
   // Providers
   const exampleProvider = await prisma.aIProvider.upsert({
     where: { name: "ExampleAI" },
@@ -37,10 +44,10 @@ async function main() {
 
   // Pricing entries
   const gpt4Pricing = await prisma.modelPricing.upsert({
-    where: { name: "gpt-4.1" },
+    where: { name: "gpt-4.1-mini" },
     update: {},
     create: {
-      name: "gpt-4.1",
+      name: "gpt-4.1-mini",
       inputPricePerMillion: new Prisma.Decimal(10),
       outputPricePerMillion: new Prisma.Decimal(30),
       cachedPricePerMillion: null,
@@ -53,10 +60,10 @@ async function main() {
   });
 
   const economyPricing = await prisma.modelPricing.upsert({
-    where: { name: "gpt-4.1-economy" },
+    where: { name: "gpt-4.1-mini-economy" },
     update: {},
     create: {
-      name: "gpt-4.1-economy",
+      name: "gpt-4.1-mini-economy",
       inputPricePerMillion: new Prisma.Decimal(5),
       outputPricePerMillion: new Prisma.Decimal(15),
       cachedPricePerMillion: null,
@@ -70,11 +77,11 @@ async function main() {
 
   // Models
   const gpt4Model = await prisma.aIModel.upsert({
-    where: { name_version: { name: "gpt-4.1", version: "2024-11" } },
+    where: { name_version: { name: "ChatGPT", version: "gpt-4.1-mini" } },
     update: {},
     create: {
-      name: "gpt-4.1",
-      version: "2024-11",
+      name: "ChatGPT",
+      version: "gpt-4.1-mini",
       providerName: exampleProvider.name,
       releaseDate: new Date("2024-11-01T00:00:00.000Z"),
       status: "production",
@@ -92,11 +99,13 @@ async function main() {
   });
 
   const economyModel = await prisma.aIModel.upsert({
-    where: { name_version: { name: "gpt-4.1-economy", version: "2024-11" } },
+    where: {
+      name_version: { name: "ChatGPT", version: "gpt-4.1-mini-economy" },
+    },
     update: {},
     create: {
-      name: "gpt-4.1-economy",
-      version: "2024-11",
+      name: "ChatGPT",
+      version: "gpt-4.1-mini-economy",
       providerName: altProvider.name,
       releaseDate: new Date("2024-11-01T00:00:00.000Z"),
       status: "production",

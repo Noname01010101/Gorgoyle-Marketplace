@@ -46,14 +46,24 @@ export default function PricingPage() {
   }, []);
 
   useEffect(() => {
-    filterModels();
-  }, [minInput, maxOutput, models, sortBy]);
+    // Fetch models from API when price filters change
+    loadModels(minInput, maxOutput);
+  }, [minInput, maxOutput]);
 
-  const loadModels = async () => {
+  useEffect(() => {
+    // Re-run sorting when models or sort order change
+    filterModels();
+  }, [models, sortBy]);
+
+  const loadModels = async (min = minInput, max = maxOutput) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await trpc.catalog.getModels.query({});
+      // Use pricing router on the server to filter by range
+      const data = await trpc.pricing.filterByPriceRangeInput.query({
+        minInput: min,
+        maxOutput: max,
+      });
       const raw: unknown = data;
       setModels(raw as Model[]);
     } catch (err) {
@@ -65,16 +75,8 @@ export default function PricingPage() {
   };
 
   const filterModels = () => {
-    let filtered = models.filter((model) => {
-      if (!model.modelPricings) return false;
-      const inputPrice = parseFloat(
-        model.modelPricings.inputPricePerMillion?.toString() || "0"
-      );
-      const outputPrice = parseFloat(
-        model.modelPricings.outputPricePerMillion?.toString() || "0"
-      );
-      return inputPrice >= minInput && outputPrice <= maxOutput;
-    });
+    // Server returns models already filtered; here we only sort the list
+    let filtered = [...models];
 
     filtered.sort((a, b) => {
       const aInput = parseFloat(

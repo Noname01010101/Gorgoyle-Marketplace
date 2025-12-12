@@ -36,9 +36,10 @@ interface Model {
 interface Benchmark {
   id: number;
   modelId?: number;
-  category: string;
+  type: string;
   score: number;
-  maxScore: number;
+  maxScore?: number;
+  metadata?: Record<string, any> | null;
 }
 
 interface Suggestion {
@@ -399,38 +400,61 @@ export default function ModelDetailClient({
                 </Card>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {benchmarks.map((benchmark) => (
-                    <Card key={benchmark.id}>
-                      <h3 className="text-lg font-semibold mb-3 capitalize">
-                        {benchmark.category.replace(/_/g, " ")}
-                      </h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-text-tertiary">Score:</span>
-                          <span className="text-text-primary font-medium">
-                            {benchmark.score} / {benchmark.maxScore}
-                          </span>
+                  {benchmarks.map((benchmark) => {
+                    const scoreN = safeNumber(benchmark.score, NaN);
+                    const maxSource =
+                      benchmark.maxScore ?? benchmark.metadata?.maxScore;
+                    const maxN = safeNumber(maxSource, NaN);
+                    const percent =
+                      Number.isFinite(scoreN) &&
+                      Number.isFinite(maxN) &&
+                      maxN !== 0
+                        ? (scoreN / maxN) * 100
+                        : NaN;
+
+                    // derive a display label: prefer `type`, fall back to metadata.category
+                    const rawLabel =
+                      benchmark.type ??
+                      benchmark.metadata?.category ??
+                      "Uncategorized";
+                    const label =
+                      typeof rawLabel === "string" && rawLabel.length > 0
+                        ? rawLabel.replace(/_/g, " ")
+                        : "Uncategorized";
+                    return (
+                      <Card key={benchmark.id}>
+                        <h3 className="text-lg font-semibold mb-3 capitalize">
+                          {label}
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-text-tertiary">Score:</span>
+                            <span className="text-text-primary font-medium">
+                              {Number.isFinite(scoreN)
+                                ? scoreN.toFixed(1)
+                                : "N/A"}
+                              {Number.isFinite(maxN)
+                                ? ` / ${maxN.toFixed(1)}`
+                                : ""}
+                            </span>
+                          </div>
+                          {Number.isFinite(percent) ? (
+                            <>
+                              <div className="w-full bg-border rounded-full h-2">
+                                <div
+                                  className="bg-primary rounded-full h-2 transition-all"
+                                  style={{ width: `${percent}%` }}
+                                />
+                              </div>
+                              <p className="text-xs text-text-tertiary text-right">
+                                {`${percent.toFixed(1)}%`}
+                              </p>
+                            </>
+                          ) : null}
                         </div>
-                        <div className="w-full bg-border rounded-full h-2">
-                          <div
-                            className="bg-primary rounded-full h-2 transition-all"
-                            style={{
-                              width: `${
-                                (benchmark.score / benchmark.maxScore) * 100
-                              }%`,
-                            }}
-                          />
-                        </div>
-                        <p className="text-xs text-text-tertiary text-right">
-                          {(
-                            (benchmark.score / benchmark.maxScore) *
-                            100
-                          ).toFixed(1)}
-                          %
-                        </p>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </div>
