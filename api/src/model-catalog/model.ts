@@ -8,6 +8,7 @@ class ModelQuery {
       include: {
         provider: true,
         fields: true,
+        modelPricings: true,
       },
     });
     return res;
@@ -19,6 +20,7 @@ class ModelQuery {
       include: {
         provider: true,
         fields: true,
+        modelPricings: true,
       },
     });
     return res;
@@ -29,6 +31,11 @@ class ModelQuery {
       where: {
         name,
         version,
+      },
+      include: {
+        provider: true,
+        fields: true,
+        modelPricings: true,
       },
     });
     return res;

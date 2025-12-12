@@ -15,47 +15,9 @@ title: AI Commerce Store
 | [Backend Services](./docs/backendServices.md) | API, data models, service catalogue          |
 | [Web Frontend Pages](./docs/web-frontend-pages.md) | UI, main pages, components, visuals         |
 | [API Services](./docs/api-services.md)     | Endpoints, usage, data models                |
-| [Setup Guide](./SETUP.md)                  | Install, run, environment, troubleshooting   |
+| [Setup Guide For Frontend Devs](./SETUP.frontend.md)                  | Install, run, environment, troubleshooting   |
+| [Setup Guide For Backend Devs](./SETUP.backend.md) | Install, run, environment, database, migrations, troubleshooting |
 | [Troubleshooting & FAQ](./docs/troubleshooting.md) | Common issues, FAQ, support                 |
-
----
-
-## Visual Architecture
-
-```visual
-┌─────────────┐   ┌─────────────┐   ┌─────────────┐
-│ Frontend    │ → │ Backend API │ → │ Database    │
-│ (Next.js)   │   │ (Express)   │   │ (MySQL)     │
-└─────────────┘   └─────────────┘   └─────────────┘
-```
-
----
-
-## Project Structure
-
-```text
-api/           # Backend (Node.js, Express, Prisma)
-web-frontend/  # Frontend (Next.js)
-docs/          # Docs (Markdown)
-docker-compose.yml
-SETUP.md
-README.md
-```
-
----
-
-## Get Started
-
-See [Setup Guide](./SETUP.md) for step-by-step instructions.
-
----
-
-## Docs & Support
-
-- For doc updates, open a PR and tag the relevant team.
-- For issues, see [Troubleshooting & FAQ](./docs/troubleshooting.md).
-- VSCode (recommended)
-- Git
 
 ### Getting Started
 
@@ -66,41 +28,7 @@ See [Setup Guide](./SETUP.md) for step-by-step instructions.
     cd ai-store
     ```
 
-2. **Install dependencies:**
-
-    ```sh
-    cd api
-    npm install
-    # Repeat for other services as needed
-    ```
-
-3. **Setup environment:**
-    - Copy `.env.dev` to `.env` in each service for local development
-4. **Start database:**
-
-    ```sh
-    docker-compose up <db-service-name> --build
-    ```
-
-5. **Run Prisma migrations and seed:**
-
-    At each backend api:
-
-    ```sh
-    npx prisma generate
-    npx prisma db push
-    npm run seed
-    ```
-
-6. **Start development server:**
-
-    1. Start the apis with docker-compose.
-
-    2. At the service you're developing's context:
-
-    ```sh
-    npm run dev
-    ```
+**Note: Follow either backend setup or frontend setup**
 
 ---
 
