@@ -10,7 +10,7 @@ export default function Home() {
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <h1 className="text-7xl md:text-7xl font-semibold tracking-tight mb-10">
-            The AI Marketplace
+            Gorgoyle Marketplace
           </h1>
           <p className="text-2xl md:text-3xl text-gray-400 font-light">
             The intelligent way to find your perfect AI model.

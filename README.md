@@ -8,6 +8,44 @@ title: Gorgoyle Marketplace
 
 ---
 
+## Overview
+
+Gorgoyle Marketplace helps teams discover, evaluate, price, and benchmark AI models quickly. The platform focuses on four core capabilities shown below — replace the placeholder image sources with your own URLs or repository paths.
+
+
+### Front Page
+
+An overview and entry points to the platform's primary features.
+
+<p align="center">
+    <img src="docs/img/frontPage.v1.png" alt="Front Page" width="640" />
+</p>
+
+### Model Catalog
+
+Browse models, versions, and capability metadata.
+
+<p align="center">
+    <img src="docs/img/model_catalog.v1.png" alt="Model Catalog" width="640" />
+</p>
+
+### Smart Pricing
+
+Compare costs and understand pricing structures across providers.
+
+<p align="center">
+    <img src="docs/img/pricing.v1.png" alt="Pricing" width="640" />
+</p>
+
+### Benchmarks
+
+View performance metrics and comparisons to inform decisions.
+
+<p align="center">
+    <img src="docs/img/benchmarks.v1.png" alt="Benchmarks" width="640" />
+</p>
+
+
 ## Quick Navigation
 | Section                | Description                                 |
 |------------------------|---------------------------------------------|

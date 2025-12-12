@@ -16,7 +16,7 @@ export default function Header() {
           href="/"
           className="text-xl font-semibold text-text-primary hover:text-primary transition-colors"
         >
-          AI Store
+          Gorgoyle Marketplace
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
