@@ -1,8 +1,8 @@
 ---
-title: AI Commerce Store
+title: Gorgoyle Marketplace
 ---
 
-# AI Commerce Store
+# Gorgoyle Marketplace
 
 > Visual, modular platform for AI model discovery, pricing, benchmarking, and capability matching.
 
