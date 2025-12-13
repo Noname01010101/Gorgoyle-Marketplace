@@ -19,7 +19,7 @@
     "build:web": "npm run build --workspace=web-frontend",
     "start:web": "npm run start --workspace=web-frontend",
     
-    "test":  "npm test --workspaces"
+    "test":  "npm test run --workspaces --if-present"
   },
   "repository": {
     "type": "git",
