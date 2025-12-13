@@ -1,88 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
-import Card from "@/components/Card";
 import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
-import { trpc } from "@/lib/trpc";
-import Link from "next/link";
+import ModelFilters from "@/components/models/ModelFilters";
+import ModelGrid from "@/components/models/ModelGrid";
+import { useModels } from "@/lib/hooks/useModels";
+import { safeNumber } from "@/lib/utils/formatters";
 
-interface Model {
-  id: number;
-  name: string;
-  version: string;
-  providerName: string;
-  releaseDate: string | Date;
-  status: string;
-  deprecated: boolean;
-  capabilities: any;
-  modalities: any;
-  supportedFormats: any;
-  languages: any;
-  metadata?: any;
-  modelPricingId: number;
-  fields: Array<{ id: number; name: string }>;
-  provider: {
-    id: number;
-    name: string;
-    country: string;
-  };
-  modelPricings?: {
-    id: number;
-    name: string;
-    outputPricePerMillion: any;
-    inputPricePerMillion: any;
-    cachedPricePerMillion?: any;
-    trainingPricePerMillion?: any;
-    currency: string;
-    unit: string;
-    effectiveAt: string | Date;
-    normalizedPerMillion?: any;
-  };
-}
+type SortOption = "name" | "price" | "context";
 
 export default function ModelsPage() {
-  const [models, setModels] = useState<Model[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { models, loading, error, refetch } = useModels();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "price" | "context">("name");
+  const [sortBy, setSortBy] = useState<SortOption>("name");
 
-  useEffect(() => {
-    loadModels();
-  }, []);
+  const filteredAndSortedModels = useMemo(() => {
+    return models
+      .filter((model) =>
+        model.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => {
+        if (sortBy === "name") return a.name.localeCompare(b.name);
+        if (sortBy === "price") {
+          const aPrice = safeNumber(a.modelPricings?.inputPricePerMillion, 0);
+          const bPrice = safeNumber(b.modelPricings?.inputPricePerMillion, 0);
+          return aPrice - bPrice;
+        }
+        return 0;
+      });
+  }, [models, searchTerm, sortBy]);
 
-  const loadModels = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await trpc.catalog.getModels.query({});
-      setModels(data as any);
-    } catch (err) {
-      setError("Failed to load models");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredAndSortedModels = models
-    .filter((model) =>
-      model.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "price") {
-        const aPrice = Number(a.modelPricings?.inputPricePerMillion || 0);
-        const bPrice = Number(b.modelPricings?.inputPricePerMillion || 0);
-        return aPrice - bPrice;
-      }
-      return 0;
-    });
+  const sortOptions = [
+    { value: "name", label: "Sort by Name" },
+    { value: "price", label: "Sort by Price" },
+    { value: "context", label: "Sort by Context" },
+  ];
 
   if (loading) return <LoadingState message="Loading models..." />;
-  if (error) return <ErrorState message={error} onRetry={loadModels} />;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -100,124 +57,15 @@ export default function ModelsPage() {
             </p>
           </div>
 
-          {/* Search and Filter Controls */}
-          <div className="mb-8 space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Search models..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-3 bg-card-bg border border-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:border-primary transition-colors"
-                />
-              </div>
-              <div className="flex gap-4">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-4 py-3 bg-card-bg border border-border rounded-lg text-text-primary focus:outline-none focus:border-primary transition-colors"
-                >
-                  <option value="name">Sort by Name</option>
-                  <option value="price">Sort by Price</option>
-                  <option value="context">Sort by Context</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <ModelFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            sortBy={sortBy}
+            onSortChange={(value) => setSortBy(value as SortOption)}
+            sortOptions={sortOptions}
+          />
 
-          {/* Models Grid */}
-          {filteredAndSortedModels.length === 0 ? (
-            <Card>
-              <p className="text-center text-text-secondary py-8">
-                No models found matching your search.
-              </p>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredAndSortedModels.map((model) => (
-                <Link
-                  key={model.id}
-                  href={`/models/${encodeURIComponent(
-                    model.name
-                  )}/${encodeURIComponent(model.version)}`}
-                >
-                  <Card hover className="h-full">
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-text-primary mb-2">
-                          {model.name}
-                        </h3>
-                        {model.provider && (
-                          <p className="text-sm text-primary">
-                            {model.provider.name}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2 text-sm">
-                        {model.metadata && (
-                          <>
-                            <div className="flex justify-between">
-                              <span className="text-text-tertiary">
-                                Context:
-                              </span>
-                              <span className="text-text-primary font-medium">
-                                {model.metadata.contextWindowTokens?.toLocaleString() ||
-                                  "N/A"}{" "}
-                                tokens
-                              </span>
-                            </div>
-                            {model.metadata.maxOutputTokens && (
-                              <div className="flex justify-between">
-                                <span className="text-text-tertiary">
-                                  Max Output:
-                                </span>
-                                <span className="text-text-primary font-medium">
-                                  {model.metadata.maxOutputTokens?.toLocaleString()}{" "}
-                                  tokens
-                                </span>
-                              </div>
-                            )}
-                          </>
-                        )}
-                        {model.modelPricings && (
-                          <>
-                            <div className="flex justify-between">
-                              <span className="text-text-tertiary">Input:</span>
-                              <span className="text-text-primary font-medium">
-                                $
-                                {model.modelPricings.inputPricePerMillion?.toString() ||
-                                  "N/A"}
-                                /M
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-text-tertiary">
-                                Output:
-                              </span>
-                              <span className="text-text-primary font-medium">
-                                $
-                                {model.modelPricings.outputPricePerMillion?.toString() ||
-                                  "N/A"}
-                                /M
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <div className="pt-4 border-t border-border">
-                        <span className="text-primary text-sm hover:text-primary-hover transition-colors">
-                          View details →
-                        </span>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          )}
+          <ModelGrid models={filteredAndSortedModels} />
         </div>
       </main>
     </div>
