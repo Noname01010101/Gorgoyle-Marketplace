@@ -26,7 +26,7 @@ docker-compose up db --build -d
 ### 2. Install dependencies
 
 ```powershell
-npm install --workspaces
+npm install --workspace=api
 ```
 
 ### 3. Environment variables
