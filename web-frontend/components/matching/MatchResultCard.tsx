@@ -15,7 +15,7 @@ export default function MatchResultCard({
   return (
     <Card>
       <div className="flex gap-4">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg">
             #{rank}
           </div>
@@ -50,14 +50,20 @@ export default function MatchResultCard({
                 <div>
                   <p className="text-xs text-text-tertiary">Input Price</p>
                   <p className="text-sm font-medium text-text-primary">
-                    ${formatPrice(result.model.modelPricings.inputPricePerMillion)}
+                    $
+                    {formatPrice(
+                      result.model.modelPricings.inputPricePerMillion
+                    )}
                     /M
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-text-tertiary">Output Price</p>
                   <p className="text-sm font-medium text-text-primary">
-                    ${formatPrice(result.model.modelPricings.outputPricePerMillion)}
+                    $
+                    {formatPrice(
+                      result.model.modelPricings.outputPricePerMillion
+                    )}
                     /M
                   </p>
                 </div>

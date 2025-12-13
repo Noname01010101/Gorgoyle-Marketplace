@@ -23,9 +23,7 @@ export default function FeatureSection({
     <div className="mb-32">
       <div className="grid md:grid-cols-2 gap-16 items-center">
         <div
-          className={`space-y-6 ${
-            reverse ? "order-1 md:order-2" : "order-1"
-          }`}
+          className={`space-y-6 ${reverse ? "order-1 md:order-2" : "order-1"}`}
         >
           <h2 className="text-5xl font-semibold tracking-tight">{title}</h2>
           <p className="text-xl text-gray-400 leading-relaxed">{description}</p>

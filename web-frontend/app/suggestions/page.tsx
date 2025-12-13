@@ -104,7 +104,7 @@ export default function SuggestionsPage() {
             <div className="lg:col-span-1">
               <Card>
                 <h3 className="text-xl font-semibold mb-4">Select a Model</h3>
-                <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                <div className="space-y-2 max-h-150 overflow-y-auto">
                   {models.map((model) => (
                     <button
                       key={model.id}
