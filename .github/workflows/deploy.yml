@@ -31,6 +31,8 @@ jobs:
 
       - run: npm ci
 
+      - run: npm run prisma:setup:api
+
       - run: npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
 
       - run: npx vercel build --prod --token=$VERCEL_TOKEN
