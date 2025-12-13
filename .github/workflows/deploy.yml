@@ -14,23 +14,29 @@ on:
 
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-            
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '20'
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            - name: Install dependencies
-              run: npm ci
+    steps:
+      - uses: actions/checkout@v4
 
-            - run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-            - run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npm ci
+        working-directory: web-frontend
 
-            - run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+        working-directory: web-frontend
+
+      - run: npx vercel build --prod --token=$VERCEL_TOKEN
+        working-directory: web-frontend
+
+      - run: npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+        working-directory: web-frontend
