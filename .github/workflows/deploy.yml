@@ -10,6 +10,7 @@ on:
         branches:
             - main
             - enhancement/github-dev-ops
+    workflow_dispatch:
 
 
 jobs:
