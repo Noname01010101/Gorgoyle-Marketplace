@@ -35,7 +35,7 @@ export interface Model {
   modalities?: any;
   supportedFormats?: any;
   languages?: any;
-  metadata?: Record<string, any> | null;
+  metadata?: any;
   modelPricingId?: number;
   provider?: Provider | null;
   modelPricings?: ModelPricing | null;
@@ -48,7 +48,7 @@ export interface Benchmark {
   type: string;
   score: number;
   maxScore?: number;
-  metadata?: Record<string, any> | null;
+  metadata?: any;
 }
 
 export interface BenchmarkSummary {
