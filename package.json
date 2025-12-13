@@ -1,0 +1,35 @@
+{
+  "name": "ai-commerce-store",
+  "version": "1.0.0",
+  "description": "---\r title: Gorgoyle Marketplace\r ---",
+  "main": "index.js",
+  "workspaces": [
+    "api",
+    "web-frontend"
+  ],
+  "scripts": {
+    "test:api": "npm test --workspace=api",
+    "host:api": "npm run host --workspace=api",
+    "seedLocal:api": "npm run seed --workspace=api",
+    "build:api": "npm run build --workspace=api",
+    "docker:dev:api": "npm run docker:dev --workspace=api",
+
+    "dev:web": "npm run dev --workspace=web-frontend",
+    "build:web": "npm run build --workspace=web-frontend",
+    "start:web": "npm run start --workspace=web-frontend",
+    
+    "test":  "npm test --workspaces"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noname01010101/ai-store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Noname01010101/ai-store/issues"
+  },
+  "homepage": "https://github.com/Noname01010101/ai-store#readme"
+}
