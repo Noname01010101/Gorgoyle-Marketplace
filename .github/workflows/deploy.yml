@@ -30,7 +30,8 @@ jobs:
           node-version: 20
 
       - run: npm ci
-        working-directory: web-frontend
+
+      - run: npx prisma generate
 
       - run: npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
 
