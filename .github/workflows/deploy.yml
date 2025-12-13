@@ -33,10 +33,7 @@ jobs:
         working-directory: web-frontend
 
       - run: npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-        working-directory: web-frontend
 
       - run: npx vercel build --prod --token=$VERCEL_TOKEN
-        working-directory: web-frontend
 
       - run: npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
-        working-directory: web-frontend
