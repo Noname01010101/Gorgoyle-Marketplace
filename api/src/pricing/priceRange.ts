@@ -4,17 +4,26 @@ const client = new PrismaClient();
 
 class PriceRangeFilter {
   static async filterByRangeInput(min: number, max: number) {
-    const pricesTable = await client.modelPricing.findMany({});
-    let filtered = pricesTable.filter((e) => {
-      // 1. Ensure formattedMax and formattedMin are converted to Decimal objects
+    const models = await client.aIModel.findMany({
+      include: {
+        provider: true,
+        fields: true,
+        modelPricings: true,
+      },
+    });
+
+    let filtered = models.filter((model) => {
+      if (!model.modelPricings) return false;
+
       const maxDecimal = new Prisma.Decimal(max);
       const minDecimal = new Prisma.Decimal(min);
 
-      // 2. Use the Decimal object's comparison methods
       const isLessThanMax =
-        e.inputPricePerMillion.lessThanOrEqualTo(maxDecimal);
+        model.modelPricings.inputPricePerMillion.lessThanOrEqualTo(maxDecimal);
       const isGreaterThanMin =
-        e.inputPricePerMillion.greaterThanOrEqualTo(minDecimal);
+        model.modelPricings.inputPricePerMillion.greaterThanOrEqualTo(
+          minDecimal
+        );
 
       return isLessThanMax && isGreaterThanMin;
     });
