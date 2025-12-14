@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const prismaClient = new PrismaClient();
 
@@ -21,7 +22,7 @@ function toStringArray(value: unknown): string[] {
 }
 
 function decimalToNumber(
-  value: Prisma.Decimal | number | null | undefined
+  value: Decimal | number | null | undefined
 ): number | null {
   if (value == null) return null;
   if (typeof value === "number") return value;
@@ -71,7 +72,7 @@ class SuggestionsService {
     );
     const targetAvgBenchmark =
       targetModel.benchmarks.length > 0
-        ? targetModel.benchmarks.reduce((acc, b) => acc + b.score, 0) /
+        ? targetModel.benchmarks.reduce((acc: number, b) => acc + b.score, 0) /
           targetModel.benchmarks.length
         : null;
 
@@ -100,7 +101,7 @@ class SuggestionsService {
       );
       const candidateAvgBenchmark =
         candidate.benchmarks.length > 0
-          ? candidate.benchmarks.reduce((acc, b) => acc + b.score, 0) /
+          ? candidate.benchmarks.reduce((acc: number, b) => acc + b.score, 0) /
             candidate.benchmarks.length
           : null;
 

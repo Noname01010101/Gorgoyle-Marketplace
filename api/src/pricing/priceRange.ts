@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const client = new PrismaClient();
 
@@ -15,8 +16,8 @@ class PriceRangeFilter {
     let filtered = models.filter((model) => {
       if (!model.modelPricings) return false;
 
-      const maxDecimal = new Prisma.Decimal(max);
-      const minDecimal = new Prisma.Decimal(min);
+      const maxDecimal = new Decimal(max);
+      const minDecimal = new Decimal(min);
 
       const isLessThanMax =
         model.modelPricings.inputPricePerMillion.lessThanOrEqualTo(maxDecimal);
@@ -34,8 +35,8 @@ class PriceRangeFilter {
     const pricesTable = await client.modelPricing.findMany({});
     let filtered = pricesTable.filter((e) => {
       // 1. Ensure formattedMax and formattedMin are converted to Decimal objects
-      const maxDecimal = new Prisma.Decimal(max);
-      const minDecimal = new Prisma.Decimal(min);
+      const maxDecimal = new Decimal(max);
+      const minDecimal = new Decimal(min);
 
       // 2. Use the Decimal object's comparison methods
       const isLessThanMax =
@@ -49,17 +50,17 @@ class PriceRangeFilter {
   }
 
   static async filterByRangeInputOutput(
-    inMax: Prisma.Decimal | number,
-    inMin: Prisma.Decimal | number,
-    outMax: Prisma.Decimal | number,
-    outMin: Prisma.Decimal | number
+    inMax: Decimal | number,
+    inMin: Decimal | number,
+    outMax: Decimal | number,
+    outMin: Decimal | number
   ) {
     const pricesTable = await client.modelPricing.findMany({});
     let filtered = pricesTable.filter((e) => {
-      const maxDecimalIn = new Prisma.Decimal(inMax);
-      const minDecimalIn = new Prisma.Decimal(inMin);
-      const maxDecimalOut = new Prisma.Decimal(outMax);
-      const minDecimalOut = new Prisma.Decimal(outMin);
+      const maxDecimalIn = new Decimal(inMax);
+      const minDecimalIn = new Decimal(inMin);
+      const maxDecimalOut = new Decimal(outMax);
+      const minDecimalOut = new Decimal(outMin);
 
       const isLessThanMaxIn =
         e.inputPricePerMillion.lessThanOrEqualTo(maxDecimalIn);
