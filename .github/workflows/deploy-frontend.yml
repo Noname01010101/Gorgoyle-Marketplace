@@ -1,16 +1,13 @@
 name: Deploy to Vercel
 
 on:
-    push:
-        branches:
-            - main
-            - enhancement/github-dev-ops
-
-    pull_request:
-        branches:
-            - main
-            - enhancement/github-dev-ops
-    workflow_dispatch:
+    workflow_run:
+      workflows: ["Test Project"]
+      types:
+        - completed
+      branches:
+        - main
+        - enhancement/github-dev-ops
 
 
 jobs:
