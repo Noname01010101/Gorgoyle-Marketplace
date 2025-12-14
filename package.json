@@ -14,7 +14,6 @@
     "seed:api": "npm run seed --workspace=api",
     "dev:seedLocal:api": "npm run seed --workspace=api",
 
-    "dev:docker:web": "docker-compose up -d && docker exec api-service npx prisma generate && docker exec api-service npx prisma db push && docker exec api-service npm run seed",
     "dev:web": "npm run dev --workspace=web-frontend",
     "build:web": "npm run build --workspace=web-frontend",
     "start:web": "npm run start --workspace=web-frontend",

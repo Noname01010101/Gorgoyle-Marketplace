@@ -15,8 +15,8 @@ services:
   api:
     container_name: api-service
     build:
-      context: ./api
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: api/Dockerfile.dev
     environment:
       PORT: 1092
     ports:

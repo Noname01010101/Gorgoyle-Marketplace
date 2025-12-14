@@ -20,7 +20,10 @@ title: Setup Guide
 ### 1. Docker setup
 
 ```powershell
-docker-compose up -d --build
+docker-compose up -d --build;
+docker exec api-service npx prisma generate;
+docker exec api-service npx prisma db push;
+docker exec api-service npm run seed
 ```
 ### 2. Install dependencies
 
