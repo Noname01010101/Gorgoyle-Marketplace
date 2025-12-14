@@ -2,7 +2,7 @@ name: Deploy to Vercel
 
 on:
     workflow_run:
-      workflows: ["Test Project"]
+      workflows: ["Test Project", "Deploy backend api"]
       types:
         - completed
       branches:

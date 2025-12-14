@@ -11,6 +11,7 @@
     "test:api": "npm test --workspace=api",
     "host:api": "npm run host --workspace=api",
     "build:api": "npm run build --workspace=api",
+    "api:deploy:render": "npm run ci && npx prisma migrate deploy --schema=api/prisma/shema.prisma && npm run build --workspace=api",
     "seed:api": "npm run seed --workspace=api",
     "dev:seedLocal:api": "npm run seed --workspace=api",
 
