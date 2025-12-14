@@ -7,7 +7,6 @@ on:
         - completed
       branches:
         - main
-        - enhancement/github-dev-ops
 
 
 jobs:
