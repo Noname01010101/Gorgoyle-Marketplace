@@ -11,7 +11,7 @@
     "test:api": "npm test --workspace=api",
     "host:api": "npm run host --workspace=api",
     "build:api": "npm run build --workspace=api",
-    "dev:db:init": "npm run db:init --workspace=api",
+    "seed:api": "npm run seed --workspace=api",
     "dev:seedLocal:api": "npm run seed --workspace=api",
 
     "dev:docker:web": "docker-compose up -d && docker exec api-service npx prisma generate && docker exec api-service npx prisma db push && docker exec api-service npm run seed",

@@ -1,18 +1,17 @@
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres
     restart: always
     container_name: database-api
     environment:
-      MYSQL_ROOT_PASSWORD: root_pwd
-      MYSQL_DATABASE: db
-      MYSQL_USER: dev_user
-      MYSQL_PASSWORD: mysql_pwd
+      POSTGRES_USER: DEV
+      POSTGRES_PASSWORD: PASS
+      POSTGRES_DB: MAIN
     ports:
-      - "2100:3306"
+      - "2100:5432"
     volumes:
-      - db-volume:/var/lib/mysql
+      - db-volume:/var/lib/postgresql/data
   api:
     container_name: api-service
     build:
