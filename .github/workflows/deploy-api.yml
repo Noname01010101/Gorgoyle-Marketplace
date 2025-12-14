@@ -1,0 +1,16 @@
+name: Deploy backend api
+
+on:
+    workflow_run:
+        workflows: ["Test Project"]
+        types: [completed]
+        branches:
+          - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger Render Deploy
+              run: |
+                curl -fsSL "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"

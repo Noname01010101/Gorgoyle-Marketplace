@@ -20,26 +20,22 @@ title: Setup Guide
 ### 1. Database setup
 
 ```powershell
-docker-compose up db --build -d
+docker-compose up db -d --build &&
+npx prisma migrate dev --name init --schema ./api/prisma/schema.prisma &&
+npm run seed:api
 ```
 
 ### 2. Install dependencies
 
 ```powershell
-npm install --workspace=api
+npm install
 ```
 
 ### 3. Environment variables
 
 Move `.env.dev` to `.env` for development
 
-### 4. Prisma setup
-
-```powershell
-npm run prisma:setup:api
-```
-
-### 5. Testing
+### 4. Testing
 
 ```powershell
 npm test --workspace=api

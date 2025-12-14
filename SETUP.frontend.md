@@ -17,25 +17,21 @@ title: Setup Guide
 
 ## Initial setup
 
-### 1. Build Backend
+### 1. Docker setup
 
 ```powershell
-docker-compose build
+docker-compose up -d --build;
+docker exec api-service npx prisma generate;
+docker exec api-service npx prisma db push;
+docker exec api-service npm run seed
 ```
-
-### 2. Run And Setup The Backend
-
-```powershell
-npm run docker:web
-```
-
-### 3. Install dependencies
+### 2. Install dependencies
 
 ```powershell
 npm install
 ```
 
-### 4. Start Frontend
+### 3. Start Frontend
 
 Copy `.env.dev` to `.env`, then run:
 
@@ -52,7 +48,7 @@ This is the common development path. Notice that changes in `./api` will require
 ### 1. Start the backend
 
 ```powershell
-npm run docker:web
+docker-compose up -d
 ```
 
 ### 2. Start the frontend
