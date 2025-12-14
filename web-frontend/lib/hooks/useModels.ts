@@ -12,7 +12,7 @@ export function useModels() {
       setLoading(true);
       setError(null);
       const data = await trpc.catalog.getModels.query({});
-      setModels(data as Model[]);
+      setModels(data as unknown as Model[]);
     } catch (err) {
       setError("Failed to load models");
       console.error(err);
