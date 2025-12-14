@@ -2,22 +2,16 @@ FROM node:20
 
 WORKDIR /app
 
-# Copy root package files
 COPY package.json package-lock.json ./
 
-# Copy api package file
 COPY api/package.json ./api/
 
-# Install dependencies for api workspace only
 RUN npm ci
 
-# Copy prisma schema
 COPY api/prisma ./api/prisma
 
-# Generate prisma client (cached unless schema changes)
 RUN npx prisma generate --schema=./api/prisma/schema.prisma
 
-# Copy source code and config
 COPY api/src ./api/src
 COPY api/tsconfig.json ./api/tsconfig.json
 COPY api/host.ts ./api/host.ts
