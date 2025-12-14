@@ -11,8 +11,7 @@
     "host": "node ./dist/host.js",
     "seed": "tsx prisma/seed.ts",
     "build": "tsc",
-    "docker:dev": "cd ../ && docker-compose up -d && docker exec api-service npx prisma generate && docker exec api-service npx prisma db push && docker exec api-service npm run seed",
-    "prisma:setup": "npx prisma db push && npx prisma generate && npm run seed"
+    "db:init": "cd ../ && docker-compose up db -d"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",

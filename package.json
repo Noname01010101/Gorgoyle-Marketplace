@@ -10,11 +10,11 @@
   "scripts": {
     "test:api": "npm test --workspace=api",
     "host:api": "npm run host --workspace=api",
-    "seedLocal:api": "npm run seed --workspace=api",
     "build:api": "npm run build --workspace=api",
-    "prisma:setup:api": "npm run prisma:setup --workspace=api",
+    "dev:db:init": "npm run db:init --workspace=api",
+    "dev:seedLocal:api": "npm run seed --workspace=api",
 
-    "docker:web": "npm run docker:dev --workspace=api",
+    "dev:docker:web": "docker-compose up -d && docker exec api-service npx prisma generate && docker exec api-service npx prisma db push && docker exec api-service npm run seed",
     "dev:web": "npm run dev --workspace=web-frontend",
     "build:web": "npm run build --workspace=web-frontend",
     "start:web": "npm run start --workspace=web-frontend",
