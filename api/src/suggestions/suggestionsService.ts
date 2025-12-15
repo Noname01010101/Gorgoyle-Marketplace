@@ -72,8 +72,10 @@ class SuggestionsService {
     );
     const targetAvgBenchmark =
       targetModel.benchmarks.length > 0
-        ? targetModel.benchmarks.reduce((acc: number, b) => acc + b.score, 0) /
-          targetModel.benchmarks.length
+        ? targetModel.benchmarks.reduce(
+            (acc: number, b: { score: number }) => acc + b.score,
+            0
+          ) / targetModel.benchmarks.length
         : null;
 
     const otherModels = await prismaClient.aIModel.findMany({
@@ -101,8 +103,10 @@ class SuggestionsService {
       );
       const candidateAvgBenchmark =
         candidate.benchmarks.length > 0
-          ? candidate.benchmarks.reduce((acc: number, b) => acc + b.score, 0) /
-            candidate.benchmarks.length
+          ? candidate.benchmarks.reduce(
+              (acc: number, b: { score: number }) => acc + b.score,
+              0
+            ) / candidate.benchmarks.length
           : null;
 
       const costDelta =

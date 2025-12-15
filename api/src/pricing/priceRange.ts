@@ -13,7 +13,7 @@ class PriceRangeFilter {
       },
     });
 
-    let filtered = models.filter((model) => {
+    let filtered = models.filter((model: any) => {
       if (!model.modelPricings) return false;
 
       const maxDecimal = new Decimal(max);
@@ -33,7 +33,7 @@ class PriceRangeFilter {
 
   static async filterByRangeOutput(min: number, max: number) {
     const pricesTable = await client.modelPricing.findMany({});
-    let filtered = pricesTable.filter((e) => {
+    let filtered = pricesTable.filter((e: any) => {
       // 1. Ensure formattedMax and formattedMin are converted to Decimal objects
       const maxDecimal = new Decimal(max);
       const minDecimal = new Decimal(min);
@@ -56,7 +56,7 @@ class PriceRangeFilter {
     outMin: Decimal | number
   ) {
     const pricesTable = await client.modelPricing.findMany({});
-    let filtered = pricesTable.filter((e) => {
+    let filtered = pricesTable.filter((e: any) => {
       const maxDecimalIn = new Decimal(inMax);
       const minDecimalIn = new Decimal(inMin);
       const maxDecimalOut = new Decimal(outMax);

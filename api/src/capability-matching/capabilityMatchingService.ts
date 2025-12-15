@@ -68,8 +68,10 @@ class CapabilityMatchingService {
       const benchmarks = model.benchmarks;
       const avgBenchmarkScore =
         benchmarks.length > 0
-          ? benchmarks.reduce((acc: number, b) => acc + b.score, 0) /
-            benchmarks.length
+          ? benchmarks.reduce(
+              (acc: number, b: { score: number }) => acc + b.score,
+              0
+            ) / benchmarks.length
           : null;
 
       if (maxPrice != null && cost != null && cost > maxPrice) {
