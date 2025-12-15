@@ -4,7 +4,7 @@ title: Gorgoyle Marketplace
 
 # Gorgoyle Marketplace
 
-> Visual, modular platform for AI model discovery, pricing, benchmarking, and capability matching.
+> Visual, modular platform for AI model discovery, pricing, benchmarking, and capability matching
 
 ---
 
