@@ -13,11 +13,11 @@ export default function PreReleaseWarning() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] bg-yellow-50 border-b border-yellow-200">
+    <div className="fixed top-0 left-0 right-0 z-100 bg-yellow-50 border-b border-yellow-200">
       <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 pt-0.5">
+            <div className="shrink-0 pt-0.5">
               <svg
                 className="h-5 w-5 text-yellow-600"
                 fill="none"
@@ -49,7 +49,7 @@ export default function PreReleaseWarning() {
           <button
             type="button"
             onClick={() => setIsVisible(false)}
-            className="flex-shrink-0 inline-flex rounded-md bg-yellow-50 p-1.5 text-yellow-600 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-yellow-50"
+            className="shrink-0 inline-flex rounded-md bg-yellow-50 p-1.5 text-yellow-600 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-yellow-50"
             aria-label="Dismiss warning"
           >
             <svg
