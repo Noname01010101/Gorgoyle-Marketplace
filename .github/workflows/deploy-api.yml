@@ -1,11 +1,6 @@
 name: Deploy backend api
 
 on:
-    workflow_run:
-        workflows: ["Test Project"]
-        types: [completed]
-        branches:
-          - main
     push:
       branches:
         - main
