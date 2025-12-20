@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Post-merge hook: Remind to install dependencies after merging
+echo "🔄 Post-merge: Checking for dependency changes..."
+
+# Check if package.json or pnpm-lock.yaml changed
+CHANGED_FILES="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+
+if echo "$CHANGED_FILES" | grep --quiet "package.json\|pnpm-lock.yaml"; then
+  echo "📦 Dependencies changed! Run 'pnpm install' to update."
+fi
+
+# Check if prisma schema changed
+if echo "$CHANGED_FILES" | grep --quiet "prisma/schema.prisma"; then
+  echo "🗄️  Prisma schema changed! Run 'pnpm --filter api prisma generate' to update."
+fi

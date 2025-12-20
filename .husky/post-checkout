@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Post-checkout hook: Remind to install dependencies after switching branches
+command=$(ps -ocommand= -p $PPID)
+
+# Only run after checkout, not after clone
+if [ "$3" = "1" ]; then
+  echo "🔄 Post-checkout: Checking for dependency changes..."
+  
+  # Check if package.json or pnpm-lock.yaml changed between branches
+  CHANGED_FILES="$(git diff --name-only $1 $2)"
+  
+  if echo "$CHANGED_FILES" | grep --quiet "package.json\|pnpm-lock.yaml"; then
+    echo "📦 Dependencies changed! Run 'pnpm install' to update."
+  fi
+  
+  # Check if prisma schema changed
+  if echo "$CHANGED_FILES" | grep --quiet "prisma/schema.prisma"; then
+    echo "🗄️  Prisma schema changed! Run 'pnpm --filter api prisma generate' to update."
+  fi
+fi

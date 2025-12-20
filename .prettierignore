@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist
+.next
+out
+build
+
+# Environment files
+.env
+.env*.local
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+
+# Prisma
+prisma/migrations
+
+# Test coverage
+coverage

@@ -1,5 +1,5 @@
 import PriceRangeFilter from "./priceRange";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 
 const client = new PrismaClient();

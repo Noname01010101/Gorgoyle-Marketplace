@@ -3,23 +3,31 @@
   "version": "1.0.0",
   "description": "---\r title: Gorgoyle Marketplace\r ---",
   "main": "index.js",
+  "packageManager": "pnpm@9.0.0",
   "workspaces": [
     "api",
     "web-frontend"
   ],
   "scripts": {
-    "test:api": "npm test --workspace=api",
-    "host:api": "npm run host --workspace=api",
-    "build:api": "npm run build --workspace=api",
-    "api:deploy:render": "npm ci && npx prisma migrate deploy --schema=api/prisma/schema.prisma && npm run build --workspace=api && npx prisma generate --schema=api/prisma/schema.prisma",
-    "seed:api": "npm run seed --workspace=api",
-    "dev:seedLocal:api": "npm run seed --workspace=api",
+    "prepare": "husky",
+    "postinstall": "git config commit.template .gitmessage || true",
+    "test:api": "pnpm --filter api test",
+    "host:api": "pnpm --filter api host",
+    "build:api": "pnpm --filter api build",
+    "api:deploy:render": "pnpm install && pnpx prisma migrate deploy --schema=api/prisma/schema.prisma && pnpm --filter api build && pnpx prisma generate --schema=api/prisma/schema.prisma",
+    "seed:api": "pnpm --filter api seed",
+    "dev:seedLocal:api": "pnpm --filter api seed",
 
-    "dev:web": "npm run dev --workspace=web-frontend",
-    "build:web": "npm run build --workspace=web-frontend",
-    "start:web": "npm run start --workspace=web-frontend",
+    "dev:web": "pnpm --filter web-frontend dev",
+    "build:web": "pnpm --filter web-frontend build",
+    "start:web": "pnpm --filter web-frontend start",
     
-    "test":  "npm test run --workspaces --if-present"
+    "clean": "pnpm --filter pricing-api clean && pnpm --filter @ai-store/web-frontend clean",
+    "typecheck": "pnpm --filter pricing-api typecheck && pnpm --filter @ai-store/web-frontend typecheck",
+    "lint": "pnpm --filter pricing-api lint && pnpm --filter @ai-store/web-frontend lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "test":  "pnpm -r test"
   },
   "repository": {
     "type": "git",
@@ -32,5 +40,21 @@
   "bugs": {
     "url": "https://github.com/Noname01010101/ai-store/issues"
   },
-  "homepage": "https://github.com/Noname01010101/ai-store#readme"
+  "homepage": "https://github.com/Noname01010101/ai-store#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
 }

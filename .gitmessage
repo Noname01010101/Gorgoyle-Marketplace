@@ -1,0 +1,87 @@
+# <type>(<scope>): <subject>
+# |----| |------| |---------|
+# |      |        |
+# |      |        +-> Summary in present tense. Not capitalized. No period at the end.
+# |      |                   (10-72 characters)
+# |      |
+# |      +----------> Scope: api|web|frontend|benchmarks|capability-matching|
+# |                            model-catalog|pricing|suggestions|database|
+# |                            prisma|docker|components|pages|hooks|utils|
+# |                            tests|ci|build|deps|config|docs|etc.
+# |
+# +-----------------> Type: feat|fix|hotfix|docs|style|refactor|perf|
+#                             test|build|ci|chore|revert|security|deps|config
+
+# Body (optional): Explain *what* and *why* (not *how*). Wrap at 100 characters.
+# 
+
+
+# Footer (optional): Reference issues, breaking changes, etc.
+# 
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 📝 EXAMPLES:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# feat(api): add pricing comparison endpoint
+#
+# fix(web): resolve navigation bug on mobile devices
+#
+# docs(readme): update installation instructions
+#
+# refactor(pricing): simplify price calculation logic
+#
+# perf(database): optimize query performance for large datasets
+#
+# With body:
+#
+# feat(api): add caching layer for model catalog
+#
+# Implements Redis caching to reduce database load and improve
+# response times for frequently accessed model data. Cache
+# invalidation occurs on model updates.
+#
+# Closes #123
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🏷️  TYPES:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# feat       ✨  New feature for the user
+# fix        🐛  Bug fix
+# hotfix     🚑  Critical hotfix
+# docs       📝  Documentation only changes
+# style      💄  Formatting, missing semi colons, etc; no code change
+# refactor   ♻️   Refactoring production code
+# perf       ⚡  Performance improvements
+# test       ✅  Adding missing tests or correcting existing tests
+# build      📦  Build system or external dependencies
+# ci         👷  CI/CD configuration files and scripts
+# chore      🔧  Other changes that don't modify src or test files
+# revert     ⏪  Revert previous commit
+# security   🔒  Security improvements or fixes
+# deps       ⬆️   Dependency updates
+# config     ⚙️   Configuration changes
+# wip        🚧  Work in progress (use sparingly)
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 📏 RULES:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# • Use lowercase for type, scope, and subject
+# • Use imperative mood in subject ("add" not "added" or "adds")
+# • Don't end subject with a period
+# • Subject: 10-72 characters
+# • Header (type + scope + subject): 15-100 characters
+# • Separate subject from body with blank line
+# • Wrap body at 100 characters
+# • Use body to explain what and why vs. how
+# • Scope is recommended (will show warning if omitted)
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🔗 REFERENCES:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# • Conventional Commits: https://www.conventionalcommits.org/
+# • Project docs: GIT_HOOKS.md
+#

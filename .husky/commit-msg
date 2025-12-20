@@ -1,0 +1,95 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ============================================
+# COMMIT MESSAGE VALIDATION HOOK
+# ============================================
+# This hook validates commit messages against
+# the Conventional Commits specification.
+# ============================================
+
+echo ""
+echo "╔════════════════════════════════════════╗"
+echo "║   📋 Validating Commit Message...     ║"
+echo "╔════════════════════════════════════════╗"
+echo ""
+
+# Run commitlint to validate the commit message
+pnpm commitlint --edit $1
+
+COMMITLINT_EXIT_CODE=$?
+
+if [ $COMMITLINT_EXIT_CODE -ne 0 ]; then
+  echo ""
+  echo "╔════════════════════════════════════════════════════════════════════╗"
+  echo "║  ❌ COMMIT MESSAGE VALIDATION FAILED                               ║"
+  echo "╚════════════════════════════════════════════════════════════════════╝"
+  echo ""
+  echo "📖 Commit Message Format:"
+  echo "   <type>(<scope>): <subject>"
+  echo ""
+  echo "   [optional body]"
+  echo ""
+  echo "   [optional footer]"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "📝 Examples of VALID commit messages:"
+  echo ""
+  echo "   ✅ feat(api): add pricing comparison endpoint"
+  echo "   ✅ fix(web): resolve navigation bug on mobile devices"
+  echo "   ✅ docs(readme): update installation instructions"
+  echo "   ✅ refactor(pricing): simplify price calculation logic"
+  echo "   ✅ perf(database): optimize query performance for large datasets"
+  echo "   ✅ test(benchmarks): add unit tests for benchmark service"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "🏷️  Available Types:"
+  echo "   • feat       - ✨ New feature"
+  echo "   • fix        - 🐛 Bug fix"
+  echo "   • hotfix     - 🚑 Critical hotfix"
+  echo "   • docs       - 📝 Documentation"
+  echo "   • style      - 💄 Formatting (no code change)"
+  echo "   • refactor   - ♻️  Code refactoring"
+  echo "   • perf       - ⚡ Performance improvement"
+  echo "   • test       - ✅ Tests"
+  echo "   • build      - 📦 Build system"
+  echo "   • ci         - 👷 CI/CD"
+  echo "   • chore      - 🔧 Maintenance"
+  echo "   • revert     - ⏪ Revert commit"
+  echo "   • security   - 🔒 Security"
+  echo "   • deps       - ⬆️  Dependencies"
+  echo "   • config     - ⚙️  Configuration"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "🎯 Available Scopes:"
+  echo "   Core: api, web, frontend, monorepo, workspace"
+  echo "   Services: benchmarks, capability-matching, model-catalog, pricing, suggestions"
+  echo "   Frontend: components, pages, layout, hooks, utils, types"
+  echo "   Infra: database, prisma, docker, deployment"
+  echo "   Tooling: husky, eslint, typescript, tests, ci, build, deps, config"
+  echo "   Docs: docs, readme"
+  echo "   Release: release, changelog"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "📏 Requirements:"
+  echo "   • Subject: 10-72 characters, lowercase, no period at end"
+  echo "   • Header: 15-100 characters total"
+  echo "   • Use imperative mood (\"add\" not \"added\" or \"adds\")"
+  echo "   • Separate body/footer with blank line"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "📚 For more details, see: GIT_HOOKS.md"
+  echo ""
+  echo "💡 Tip: Use 'git commit' without -m to open editor for detailed messages"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "✅ Commit message is valid!"
+echo ""

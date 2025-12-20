@@ -25,7 +25,7 @@ const benchmarksProcedure = t.procedure
         model.id
       );
       return benchmarks;
-    } catch (error) {
+    } catch {
       return { error: "Failed to fetch benchmarks" };
     }
   });
@@ -54,7 +54,7 @@ const benchmarkSummaryProcedure = t.procedure
       }
 
       return summary;
-    } catch (error: Error | any) {
+    } catch {
       return { error: "Failed to fetch benchmark summary" };
     }
   });
