@@ -13,9 +13,11 @@ echo "╔═══════════════════════�
 echo ""
 
 # Run commitlint to validate the commit message
-pnpm exec commitlint --edit $1
-
+# Capture exit code while allowing script to continue
+set +e
+pnpm exec commitlint --edit $1 2>&1
 COMMITLINT_EXIT_CODE=$?
+set -e
 
 if [ $COMMITLINT_EXIT_CODE -ne 0 ]; then
   echo ""
