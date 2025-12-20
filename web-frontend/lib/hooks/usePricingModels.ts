@@ -15,7 +15,7 @@ export function usePricingModels(minInput: number, maxOutput: number) {
         minInput: min,
         maxOutput: max,
       });
-      setModels(data as any);
+      setModels(data as Model[]);
     } catch (err) {
       setError("Failed to load pricing data");
       console.error(err);
@@ -26,6 +26,7 @@ export function usePricingModels(minInput: number, maxOutput: number) {
 
   useEffect(() => {
     loadModels(minInput, maxOutput);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minInput, maxOutput]);
 
   return { models, loading, error, refetch: loadModels };

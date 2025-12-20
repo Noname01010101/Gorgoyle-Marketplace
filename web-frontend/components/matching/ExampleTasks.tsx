@@ -1,9 +1,5 @@
 import Card from "@/components/Card";
 
-interface ExampleTask {
-  text: string;
-}
-
 interface ExampleTasksProps {
   tasks: string[];
   onSelectTask: (task: string) => void;

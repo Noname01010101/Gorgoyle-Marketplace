@@ -7,14 +7,14 @@ export interface Provider {
 export interface ModelPricing {
   id: number;
   name: string;
-  inputPricePerMillion: any;
-  outputPricePerMillion: any;
-  cachedPricePerMillion?: any;
-  trainingPricePerMillion?: any;
+  inputPricePerMillion: unknown;
+  outputPricePerMillion: unknown;
+  cachedPricePerMillion?: unknown;
+  trainingPricePerMillion?: unknown;
   currency: string;
   unit: string;
   effectiveAt: string | Date;
-  normalizedPerMillion?: any;
+  normalizedPerMillion?: unknown;
 }
 
 export interface ModelField {
@@ -31,11 +31,11 @@ export interface Model {
   releaseDate?: string | Date;
   status?: string;
   deprecated?: boolean;
-  capabilities?: any;
-  modalities?: any;
-  supportedFormats?: any;
-  languages?: any;
-  metadata?: any;
+  capabilities?: Record<string, unknown> | null;
+  modalities?: string[] | null;
+  supportedFormats?: string[] | null;
+  languages?: string[] | null;
+  metadata?: Record<string, unknown> | null;
   modelPricingId?: number;
   provider?: Provider | null;
   modelPricings?: ModelPricing | null;
@@ -48,7 +48,7 @@ export interface Benchmark {
   type: string;
   score: number;
   maxScore?: number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export interface BenchmarkSummary {

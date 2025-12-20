@@ -7,41 +7,25 @@ import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
 import { trpc } from "@/lib/trpc";
 import Link from "next/link";
+import { Model } from "@/lib/types";
 
-interface Model {
-  id: number;
-  name: string;
-  version: string;
-  providerName: string;
-  provider?: {
-    id: number;
-    name: string;
-  } | null;
-  modelPricings?: {
-    inputPricePerMillion: any; // Prisma Decimal
-    outputPricePerMillion: any; // Prisma Decimal
-  } | null;
-  fields?: Array<{
-    id: number;
-    name: string;
-  }> | null;
-  metadata?: any;
-  capabilities?: any;
-  modalities?: any;
-  supportedFormats?: any;
-  languages?: any;
+interface Suggestion {
+  model: Model;
+  reason?: string;
+  similarityScore: number;
 }
 
 export default function SuggestionsPage() {
-  const [models, setModels] = useState<any[]>([]);
-  const [selectedModel, setSelectedModel] = useState<any>(null);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadModels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadModels = async () => {
@@ -63,7 +47,7 @@ export default function SuggestionsPage() {
     }
   };
 
-  const handleSelectModel = async (model: any) => {
+  const handleSelectModel = async (model: Model) => {
     setSelectedModel(model);
     setLoadingSuggestions(true);
 
@@ -72,7 +56,7 @@ export default function SuggestionsPage() {
         name: model.name,
         version: model.version,
       });
-      setSuggestions(response.suggestions || []);
+      setSuggestions((response.suggestions || []) as unknown as Suggestion[]);
     } catch (err) {
       console.error("Failed to load suggestions:", err);
       setSuggestions([]);
@@ -286,14 +270,13 @@ export default function SuggestionsPage() {
                                   </div>
                                 </>
                               )}
-                              {suggestion.model.metadata
-                                ?.contextWindowTokens && (
+                              {suggestion.model.metadata && (suggestion.model.metadata as { contextWindowTokens?: number }).contextWindowTokens && (
                                 <div>
                                   <div className="text-text-tertiary mb-1">
                                     Context
                                   </div>
                                   <div className="text-text-primary font-medium">
-                                    {suggestion.model.metadata.contextWindowTokens.toLocaleString()}
+                                    {((suggestion.model.metadata as { contextWindowTokens: number }).contextWindowTokens).toLocaleString()}
                                   </div>
                                 </div>
                               )}

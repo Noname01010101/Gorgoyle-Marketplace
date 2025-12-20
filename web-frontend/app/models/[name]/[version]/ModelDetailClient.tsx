@@ -19,18 +19,18 @@ interface Model {
     name: string;
   } | null;
   modelPricings?: {
-    inputPricePerMillion?: any; // Prisma Decimal or string
-    outputPricePerMillion?: any; // Prisma Decimal or string
+    inputPricePerMillion?: unknown;
+    outputPricePerMillion?: unknown;
   } | null;
   fields?: Array<{
     id: number;
     name: string;
   }>;
-  metadata?: Record<string, any> | null;
-  capabilities?: any;
-  modalities?: any;
-  supportedFormats?: any;
-  languages?: any;
+  metadata?: Record<string, unknown> | null;
+  capabilities?: Record<string, unknown>;
+  modalities?: string[];
+  supportedFormats?: string[];
+  languages?: string[];
 }
 
 interface Benchmark {
@@ -39,7 +39,7 @@ interface Benchmark {
   type: string;
   score: number;
   maxScore?: number;
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 interface Suggestion {
@@ -66,7 +66,7 @@ export default function ModelDetailClient({
   const isMountedRef = useRef(true);
 
   // Helpers to safely parse numbers/decimals coming from API
-  const safeNumber = (v: any, fallback = 0) => {
+  const safeNumber = (v: unknown, fallback = 0) => {
     if (v == null) return fallback;
     if (typeof v === "number") return v;
     if (typeof v === "string") {
@@ -75,28 +75,28 @@ export default function ModelDetailClient({
     }
     if (typeof v === "object") {
       try {
-        // @ts-ignore
+        // @ts-expect-error - Dynamic object type checking
         if (typeof v.toNumber === "function") return v.toNumber();
         const s = String(v);
         const n = Number(s);
         return Number.isFinite(n) ? n : fallback;
-      } catch (e) {
+      } catch {
         return fallback;
       }
     }
     return fallback;
   };
 
-  const formatCount = (v: any) => {
+  const formatCount = (v: unknown) => {
     const n = Math.round(safeNumber(v, 0));
     try {
       return n.toLocaleString();
-    } catch (_) {
+    } catch {
       return String(n);
     }
   };
 
-  const formatPrice = (v: any) => {
+  const formatPrice = (v: unknown) => {
     const n = safeNumber(v, NaN);
     if (!Number.isFinite(n)) return "N/A";
     return n.toFixed(2);
@@ -107,7 +107,7 @@ export default function ModelDetailClient({
     setError(null);
 
     try {
-      const modelResp: any = await trpc.catalog.getModelByNameAndVersion.query({
+      const modelResp: unknown = await trpc.catalog.getModelByNameAndVersion.query({
         name,
         version,
       });
@@ -126,7 +126,7 @@ export default function ModelDetailClient({
         return;
       }
 
-      // Fetch supporting data (sequential await typed as `any` to avoid
+      // Fetch supporting data (sequential await typed as `unknown` to avoid
       // TypeScript's excessively deep type instantiation when using the
       // tRPC client types inside Promise.all). Results are normalized
       // at runtime below.
@@ -135,25 +135,25 @@ export default function ModelDetailClient({
         .catch((e) => {
           console.error("Failed fetching benchmarks:", e);
           return [];
-        })) as any;
+        })) as unknown;
 
       const suggResp = (await trpc.suggestions.getSuggestionsForModel
         .query({ name, version })
         .catch((e) => {
           console.error("Failed fetching suggestions:", e);
           return { suggestions: [] };
-        })) as any;
+        })) as unknown;
 
       if (!isMountedRef.current) return;
 
       setModel(modelResp as Model);
 
       // Normalize benchmarks response (accept array or { benchmarks: [] })
-      const benchAny = benchResp as any;
-      const benchArray: Benchmark[] = Array.isArray(benchAny)
-        ? (benchAny as Benchmark[])
+      const benchAny = benchResp as Record<string, unknown> & { benchmarks?: unknown[] };
+      const benchArray: Benchmark[] = Array.isArray(benchResp)
+        ? (benchResp as Benchmark[])
         : Array.isArray(benchAny?.benchmarks)
-        ? benchAny.benchmarks
+        ? benchAny.benchmarks as Benchmark[]
         : [];
       setBenchmarks(benchArray);
 
@@ -161,57 +161,72 @@ export default function ModelDetailClient({
       // - Array of { model: {...}, reason, similarityScore }
       // - Array of flattened suggestion objects { modelId, modelName, explanation, similarityScore }
       // - Or wrapper { suggestions: [...] }
-      const suggAny = suggResp as any;
-      let rawSuggestions: any[] = [];
-      if (Array.isArray(suggAny)) rawSuggestions = suggAny;
+      const suggAny = suggResp as Record<string, unknown> & { suggestions?: unknown[] };
+      let rawSuggestions: unknown[] = [];
+      if (Array.isArray(suggResp)) rawSuggestions = suggResp;
       else if (Array.isArray(suggAny?.suggestions))
         rawSuggestions = suggAny.suggestions;
       else rawSuggestions = [];
 
       const mappedSuggestions: Suggestion[] = rawSuggestions
-        .map((s: any) => {
-          if (s == null) return null as any;
-          if (s.model) {
+        .map((s: unknown) => {
+          const suggestion = s as Record<string, unknown> & {
+            model?: unknown;
+            reason?: string;
+            explanation?: string;
+            similarityScore?: number;
+            modelId?: number;
+            modelName?: string;
+            modelVersion?: string;
+            providerName?: string;
+            description?: string;
+            inputPricePerMillion?: unknown;
+            outputPricePerMillion?: unknown;
+            metadata?: Record<string, unknown>;
+          };
+          if (suggestion == null) return null;
+          if (suggestion.model) {
             return {
-              model: s.model as Model,
-              reason: s.reason ?? s.explanation ?? "",
-              similarityScore: safeNumber(s.similarityScore, 0),
+              model: suggestion.model as Model,
+              reason: suggestion.reason ?? suggestion.explanation ?? "",
+              similarityScore: safeNumber(suggestion.similarityScore, 0),
             } as Suggestion;
           }
 
           // Flattened suggestion shape -> convert to Suggestion
+          const modelData = suggestion.model as Record<string, unknown> | undefined;
           const builtModel: Model = {
-            id: safeNumber(s.modelId, -1),
-            name: s.modelName ?? s.model?.name ?? "",
-            version: s.modelVersion ?? s.model?.version ?? "",
-            provider: s.providerName
-              ? { id: -1, name: s.providerName }
-              : s.model?.provider ?? null,
-            description: s.description ?? s.model?.description ?? undefined,
+            id: safeNumber(suggestion.modelId, -1),
+            name: (suggestion.modelName ?? modelData?.name ?? "") as string,
+            version: (suggestion.modelVersion ?? modelData?.version ?? "") as string,
+            provider: suggestion.providerName
+              ? { id: -1, name: suggestion.providerName }
+              : (modelData?.provider as { id: number; name: string } | null | undefined) ?? null,
+            description: (suggestion.description ?? modelData?.description) as string | undefined,
             modelPricings:
-              s.inputPricePerMillion != null || s.outputPricePerMillion != null
+              suggestion.inputPricePerMillion != null || suggestion.outputPricePerMillion != null
                 ? {
-                    inputPricePerMillion: s.inputPricePerMillion ?? undefined,
-                    outputPricePerMillion: s.outputPricePerMillion ?? undefined,
+                    inputPricePerMillion: suggestion.inputPricePerMillion,
+                    outputPricePerMillion: suggestion.outputPricePerMillion,
                   }
-                : s.model?.modelPricings ?? null,
-            metadata: s.metadata ?? s.model?.metadata ?? null,
+                : (modelData?.modelPricings as { inputPricePerMillion?: unknown; outputPricePerMillion?: unknown } | null | undefined) ?? null,
+            metadata: (suggestion.metadata ?? modelData?.metadata) as Record<string, unknown> | null | undefined,
           } as Model;
 
           return {
             model: builtModel,
-            reason: s.explanation ?? s.reason ?? "",
-            similarityScore: safeNumber(s.similarityScore, 0),
+            reason: suggestion.explanation ?? suggestion.reason ?? "",
+            similarityScore: safeNumber(suggestion.similarityScore, 0),
           } as Suggestion;
         })
         .filter(Boolean) as Suggestion[];
 
       setSuggestions(mappedSuggestions);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error loading model details:", err);
       if (!isMountedRef.current) return;
       const message =
-        err?.message || "Unknown error while loading model details.";
+        (err as { message?: string })?.message || "Unknown error while loading model details.";
       setError(`Failed to load model details — ${message}`);
     } finally {
       if (!isMountedRef.current) return;
@@ -225,6 +240,7 @@ export default function ModelDetailClient({
     return () => {
       isMountedRef.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, version]);
 
   if (loading) return <LoadingState message="Loading model details..." />;
@@ -268,7 +284,7 @@ export default function ModelDetailClient({
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as "overview" | "benchmarks" | "similar")}
                 className={`pb-4 px-2 text-sm font-medium transition-colors border-b-2 ${
                   activeTab === tab.id
                     ? "border-primary text-primary"
@@ -476,13 +492,6 @@ export default function ModelDetailClient({
                       encodeURIComponent(suggestion.model.name) +
                       "/" +
                       encodeURIComponent(suggestion.model.version);
-                    // Debug the generated href in the browser console
-                    // so we can inspect the exact value at runtime.
-                    // This does not run on the server.
-                    if (typeof window !== "undefined") {
-                      // eslint-disable-next-line no-console
-                      console.debug("Suggestion link:", href, suggestion.model);
-                    }
 
                     return (
                       <Link key={suggestion.model.id} href={href}>
@@ -516,14 +525,14 @@ export default function ModelDetailClient({
                                 </span>
                               </div>
                             )}
-                            {suggestion.model.metadata?.contextWindowTokens && (
+                            {suggestion.model.metadata && (suggestion.model.metadata as { contextWindowTokens?: number }).contextWindowTokens && (
                               <div className="flex justify-between">
                                 <span className="text-text-tertiary">
                                   Context:
                                 </span>
                                 <span className="text-text-primary">
                                   {formatCount(
-                                    suggestion.model.metadata
+                                    (suggestion.model.metadata as { contextWindowTokens: number })
                                       .contextWindowTokens
                                   )}{" "}
                                   tokens

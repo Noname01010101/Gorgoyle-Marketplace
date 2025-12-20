@@ -1,4 +1,4 @@
-export const safeNumber = (v: any, fallback = 0): number => {
+export const safeNumber = (v: unknown, fallback = 0): number => {
   if (v == null) return fallback;
   if (typeof v === "number") return v;
   if (typeof v === "string") {
@@ -7,7 +7,7 @@ export const safeNumber = (v: any, fallback = 0): number => {
   }
   if (typeof v === "object") {
     try {
-      if (typeof v.toNumber === "function") return v.toNumber();
+      if (typeof (v as { toNumber?: () => number }).toNumber === "function") return (v as { toNumber: () => number }).toNumber();
       const s = String(v);
       const n = Number(s);
       return Number.isFinite(n) ? n : fallback;
@@ -18,7 +18,7 @@ export const safeNumber = (v: any, fallback = 0): number => {
   return fallback;
 };
 
-export const formatCount = (v: any): string => {
+export const formatCount = (v: unknown): string => {
   const n = Math.round(safeNumber(v, 0));
   try {
     return n.toLocaleString();
@@ -27,15 +27,15 @@ export const formatCount = (v: any): string => {
   }
 };
 
-export const formatPrice = (v: any): string => {
+export const formatPrice = (v: unknown): string => {
   const n = safeNumber(v, NaN);
   if (!Number.isFinite(n)) return "N/A";
   return n.toFixed(2);
 };
 
 export const calculateModelCost = (
-  inputPricePerMillion: any,
-  outputPricePerMillion: any,
+  inputPricePerMillion: unknown,
+  outputPricePerMillion: unknown,
   inputTokens: number,
   outputTokens: number
 ): number => {

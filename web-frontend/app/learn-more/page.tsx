@@ -184,7 +184,7 @@ export default function LearnMorePage() {
                         Recommended next model
                       </div>
                       <div className="text-sm font-medium text-white mt-0.5">
-                        Match for "chat + tools" use case
+                        Match for &quot;chat + tools&quot; use case
                       </div>
                     </div>
                     <button className="px-3 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-gray-100 transition-colors">

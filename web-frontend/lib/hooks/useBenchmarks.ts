@@ -16,9 +16,9 @@ export function useBenchmarks() {
       setError(null);
 
       const modelsData = await trpc.catalog.getModels.query({});
-      setModels(modelsData as any);
+      setModels(modelsData as Model[]);
 
-      const benchmarkPromises = modelsData.map(async (model: any) => {
+      const benchmarkPromises = modelsData.map(async (model: Model) => {
         try {
           const summary = await trpc.benchmarks.getModelBenchmarkSummary.query({
             name: model.name,

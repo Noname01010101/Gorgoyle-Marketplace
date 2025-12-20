@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface FeatureProps {
   title: string;
@@ -39,7 +40,7 @@ export default function FeatureSection({
             reverse ? "order-2 md:order-1" : "order-2"
           }`}
         >
-          <img src={imageSrc} alt={imageAlt} />
+          <Image src={imageSrc} alt={imageAlt} width={400} height={300} />
         </div>
       </div>
     </div>

@@ -38,7 +38,7 @@ export default function CapabilityMatchingPage() {
         preferences: { costWeight },
       });
 
-      setResults((response.results as any) || []);
+      setResults((response.results as unknown as MatchResult[]) || []);
     } catch (err) {
       setError("Failed to find matching models");
       console.error(err);
@@ -66,7 +66,7 @@ export default function CapabilityMatchingPage() {
               Find Your Perfect Match
             </h1>
             <p className="text-xl text-text-secondary">
-              Tell us what you need, and we'll recommend the best AI models for
+              Tell us what you need, and we&apos;ll recommend the best AI models for
               your use case
             </p>
           </div>
