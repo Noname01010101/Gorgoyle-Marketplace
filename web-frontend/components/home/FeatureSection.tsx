@@ -1,5 +1,5 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface FeatureProps {
   title: string;
@@ -23,9 +23,7 @@ export default function FeatureSection({
   return (
     <div className="mb-32">
       <div className="grid md:grid-cols-2 gap-16 items-center">
-        <div
-          className={`space-y-6 ${reverse ? "order-1 md:order-2" : "order-1"}`}
-        >
+        <div className={`space-y-6 ${reverse ? 'order-1 md:order-2' : 'order-1'}`}>
           <h2 className="text-5xl font-semibold tracking-tight">{title}</h2>
           <p className="text-xl text-gray-400 leading-relaxed">{description}</p>
           <Link
@@ -37,7 +35,7 @@ export default function FeatureSection({
         </div>
         <div
           className={`h-80 bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl flex items-center justify-center border border-gray-800 ${
-            reverse ? "order-2 md:order-1" : "order-2"
+            reverse ? 'order-2 md:order-1' : 'order-2'
           }`}
         >
           <Image src={imageSrc} alt={imageAlt} width={400} height={300} />

@@ -1,13 +1,12 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function MatchingSection() {
   return (
     <div className="text-center max-w-3xl mx-auto space-y-6 py-20">
       <h2 className="text-5xl font-semibold tracking-tight">Find Your Match</h2>
       <p className="text-xl text-gray-400 leading-relaxed">
-        Tell us what you need, and we&apos;ll recommend the perfect AI model for your
-        use case. Intelligent matching based on capabilities, budget, and
-        requirements.
+        Tell us what you need, and we&apos;ll recommend the perfect AI model for your use case.
+        Intelligent matching based on capabilities, budget, and requirements.
       </p>
       <Link
         href="/capability-matching"

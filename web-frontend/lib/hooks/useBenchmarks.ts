@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
-import { trpc } from "@/lib/trpc";
-import { Model, BenchmarkSummary } from "@/lib/types";
+import { useState, useEffect } from 'react';
+import { trpc } from '@/lib/trpc';
+import { Model, BenchmarkSummary } from '@/lib/types';
 
 export function useBenchmarks() {
   const [models, setModels] = useState<Model[]>([]);
-  const [benchmarkData, setBenchmarkData] = useState<
-    Map<number, BenchmarkSummary>
-  >(new Map());
+  const [benchmarkData, setBenchmarkData] = useState<Map<number, BenchmarkSummary>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,13 +14,14 @@ export function useBenchmarks() {
       setError(null);
 
       const modelsData = await trpc.catalog.getModels.query({});
-      setModels(modelsData as Model[]);
+      setModels(modelsData as unknown as Model[]);
 
-      const benchmarkPromises = modelsData.map(async (model: Model) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const benchmarkPromises = modelsData.map(async (model: any) => {
         try {
           const summary = await trpc.benchmarks.getModelBenchmarkSummary.query({
             name: model.name,
-            version: model.version ?? "",
+            version: model.version ?? '',
           });
           return { modelId: model.id, summary };
         } catch {
@@ -33,14 +32,14 @@ export function useBenchmarks() {
       const results = await Promise.all(benchmarkPromises);
       const dataMap = new Map();
       results.forEach(({ modelId, summary }) => {
-        if (summary && !("error" in summary)) {
+        if (summary && !('error' in summary)) {
           dataMap.set(modelId, summary);
         }
       });
 
       setBenchmarkData(dataMap);
     } catch (err) {
-      setError("Failed to load benchmark data");
+      setError('Failed to load benchmark data');
       console.error(err);
     } finally {
       setLoading(false);

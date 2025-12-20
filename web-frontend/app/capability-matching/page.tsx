@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Header from "@/components/Header";
-import Card from "@/components/Card";
-import LoadingState from "@/components/LoadingState";
-import MatchForm from "@/components/matching/MatchForm";
-import MatchResultCard from "@/components/matching/MatchResultCard";
-import ExampleTasks from "@/components/matching/ExampleTasks";
-import { trpc } from "@/lib/trpc";
-import { MatchResult } from "@/lib/types";
+import { useState } from 'react';
+import Header from '@/components/Header';
+import Card from '@/components/Card';
+import LoadingState from '@/components/LoadingState';
+import MatchForm from '@/components/matching/MatchForm';
+import MatchResultCard from '@/components/matching/MatchResultCard';
+import ExampleTasks from '@/components/matching/ExampleTasks';
+import { trpc } from '@/lib/trpc';
+import { MatchResult } from '@/lib/types';
 
 export default function CapabilityMatchingPage() {
-  const [taskDescription, setTaskDescription] = useState("");
+  const [taskDescription, setTaskDescription] = useState('');
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [costWeight, setCostWeight] = useState(0.5);
   const [results, setResults] = useState<MatchResult[]>([]);
@@ -21,7 +21,7 @@ export default function CapabilityMatchingPage() {
 
   const handleSearch = async () => {
     if (!taskDescription.trim()) {
-      setError("Please describe your task");
+      setError('Please describe your task');
       return;
     }
 
@@ -32,15 +32,13 @@ export default function CapabilityMatchingPage() {
 
       const response = await trpc.match.matchModelsForTask.query({
         taskDescription,
-        constraints: maxPrice
-          ? { maxPricePerMillionTokens: maxPrice }
-          : undefined,
+        constraints: maxPrice ? { maxPricePerMillionTokens: maxPrice } : undefined,
         preferences: { costWeight },
       });
 
       setResults((response.results as unknown as MatchResult[]) || []);
     } catch (err) {
-      setError("Failed to find matching models");
+      setError('Failed to find matching models');
       console.error(err);
     } finally {
       setLoading(false);
@@ -48,11 +46,11 @@ export default function CapabilityMatchingPage() {
   };
 
   const exampleTasks = [
-    "Code generation and debugging assistance",
-    "Customer support chatbot with high accuracy",
-    "Content writing and creative storytelling",
-    "Data analysis and report generation",
-    "Translation between multiple languages",
+    'Code generation and debugging assistance',
+    'Customer support chatbot with high accuracy',
+    'Content writing and creative storytelling',
+    'Data analysis and report generation',
+    'Translation between multiple languages',
   ];
 
   return (
@@ -62,12 +60,9 @@ export default function CapabilityMatchingPage() {
       <main className="pt-24 pb-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="mb-12">
-            <h1 className="text-5xl font-semibold tracking-tight mb-4">
-              Find Your Perfect Match
-            </h1>
+            <h1 className="text-5xl font-semibold tracking-tight mb-4">Find Your Perfect Match</h1>
             <p className="text-xl text-text-secondary">
-              Tell us what you need, and we&apos;ll recommend the best AI models for
-              your use case
+              Tell us what you need, and we&apos;ll recommend the best AI models for your use case
             </p>
           </div>
 
@@ -82,12 +77,7 @@ export default function CapabilityMatchingPage() {
             loading={loading}
           />
 
-          {!hasSearched && (
-            <ExampleTasks
-              tasks={exampleTasks}
-              onSelectTask={setTaskDescription}
-            />
-          )}
+          {!hasSearched && <ExampleTasks tasks={exampleTasks} onSelectTask={setTaskDescription} />}
 
           {error && !loading && (
             <Card className="mb-8 border-red-500">
@@ -99,16 +89,10 @@ export default function CapabilityMatchingPage() {
 
           {!loading && hasSearched && results.length > 0 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold">
-                Recommended Models ({results.length})
-              </h2>
+              <h2 className="text-2xl font-semibold">Recommended Models ({results.length})</h2>
 
               {results.map((result, index) => (
-                <MatchResultCard
-                  key={result.model.id}
-                  result={result}
-                  rank={index + 1}
-                />
+                <MatchResultCard key={result.model.id} result={result} rank={index + 1} />
               ))}
             </div>
           )}
@@ -116,8 +100,7 @@ export default function CapabilityMatchingPage() {
           {!loading && hasSearched && results.length === 0 && (
             <Card>
               <p className="text-center text-text-secondary py-8">
-                No models found matching your criteria. Try adjusting your
-                requirements.
+                No models found matching your criteria. Try adjusting your requirements.
               </p>
             </Card>
           )}

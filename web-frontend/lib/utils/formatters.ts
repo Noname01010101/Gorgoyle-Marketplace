@@ -1,13 +1,14 @@
 export const safeNumber = (v: unknown, fallback = 0): number => {
   if (v == null) return fallback;
-  if (typeof v === "number") return v;
-  if (typeof v === "string") {
+  if (typeof v === 'number') return v;
+  if (typeof v === 'string') {
     const n = Number(v);
     return Number.isFinite(n) ? n : fallback;
   }
-  if (typeof v === "object") {
+  if (typeof v === 'object') {
     try {
-      if (typeof (v as { toNumber?: () => number }).toNumber === "function") return (v as { toNumber: () => number }).toNumber();
+      if (typeof (v as { toNumber?: () => number }).toNumber === 'function')
+        return (v as { toNumber: () => number }).toNumber();
       const s = String(v);
       const n = Number(s);
       return Number.isFinite(n) ? n : fallback;
@@ -29,7 +30,7 @@ export const formatCount = (v: unknown): string => {
 
 export const formatPrice = (v: unknown): string => {
   const n = safeNumber(v, NaN);
-  if (!Number.isFinite(n)) return "N/A";
+  if (!Number.isFinite(n)) return 'N/A';
   return n.toFixed(2);
 };
 

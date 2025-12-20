@@ -1,60 +1,60 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function LearnMorePage() {
   const stats = [
-    { label: "Models tracked", value: "300+" },
-    { label: "Benchmarks", value: "40+" },
-    { label: "Providers", value: "15+" },
-    { label: "Updates / week", value: "1000s" },
+    { label: 'Models tracked', value: '300+' },
+    { label: 'Benchmarks', value: '40+' },
+    { label: 'Providers', value: '15+' },
+    { label: 'Updates / week', value: '1000s' },
   ];
 
   const pillars = [
     {
-      title: "One place for every frontier model",
+      title: 'One place for every frontier model',
       description:
-        "Stop juggling scattered docs, pricing pages, and benchmark spreadsheets. AI Store brings models, capabilities, and costs into a single, coherent view.",
+        'Stop juggling scattered docs, pricing pages, and benchmark spreadsheets. AI Store brings models, capabilities, and costs into a single, coherent view.',
     },
     {
-      title: "Decisions backed by real performance",
+      title: 'Decisions backed by real performance',
       description:
-        "Compare models using transparent benchmarks, not vague marketing claims. See how each model behaves on the tasks that matter to you.",
+        'Compare models using transparent benchmarks, not vague marketing claims. See how each model behaves on the tasks that matter to you.',
     },
     {
-      title: "Built for people who ship",
+      title: 'Built for people who ship',
       description:
-        "From CTOs to solo developers, AI Store is designed for teams who need to move fast, stay informed, and avoid expensive mistakes.",
+        'From CTOs to solo developers, AI Store is designed for teams who need to move fast, stay informed, and avoid expensive mistakes.',
     },
   ];
 
   const flows = [
     {
-      eyebrow: "For product & engineering leaders",
-      title: "Align AI strategy with your roadmap",
-      copy: "Quickly understand which models fit your product, your latency needs, and your risk profile. Share a single source of truth with your team.",
+      eyebrow: 'For product & engineering leaders',
+      title: 'Align AI strategy with your roadmap',
+      copy: 'Quickly understand which models fit your product, your latency needs, and your risk profile. Share a single source of truth with your team.',
       bullets: [
-        "Compare options by capability, price, and provider",
-        "Avoid lock-in with a clear view across vendors",
-        "Plan migrations with data, not guesswork",
+        'Compare options by capability, price, and provider',
+        'Avoid lock-in with a clear view across vendors',
+        'Plan migrations with data, not guesswork',
       ],
     },
     {
-      eyebrow: "For developers",
-      title: "Ship features, not spreadsheets",
-      copy: "Instead of digging through docs, use curated views of context length, rate limits, and supported modalities to pick a model you can integrate today.",
+      eyebrow: 'For developers',
+      title: 'Ship features, not spreadsheets',
+      copy: 'Instead of digging through docs, use curated views of context length, rate limits, and supported modalities to pick a model you can integrate today.',
       bullets: [
-        "Filter models by the constraints that matter",
-        "See pricing in a way that maps to real usage",
-        "Quick links into docs and API references",
+        'Filter models by the constraints that matter',
+        'See pricing in a way that maps to real usage',
+        'Quick links into docs and API references',
       ],
     },
     {
-      eyebrow: "For data & ML teams",
-      title: "Treat models like a real catalog",
-      copy: "Centralize how your org talks about models. Compare benchmarks, track what you approve for production, and keep an eye on what just got released.",
+      eyebrow: 'For data & ML teams',
+      title: 'Treat models like a real catalog',
+      copy: 'Centralize how your org talks about models. Compare benchmarks, track what you approve for production, and keep an eye on what just got released.',
       bullets: [
-        "Bring benchmarks and vendor data together",
-        "Standardize how you evaluate new models",
-        "Stay ahead of the release cycle without chaos",
+        'Bring benchmarks and vendor data together',
+        'Standardize how you evaluate new models',
+        'Stay ahead of the release cycle without chaos',
       ],
     },
   ];
@@ -81,16 +81,14 @@ export default function LearnMorePage() {
         <section className="px-6">
           <div className="max-w-5xl mx-auto grid gap-12 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] items-center">
             <div className="space-y-6">
-              <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
-                Learn more
-              </p>
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-400">Learn more</p>
               <h1 className="text-5xl md:text-6xl font-semibold tracking-tight">
                 The control center for your AI model choices.
               </h1>
               <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
-                AI Store is where teams go when they need a clear, unbiased view
-                of the AI landscape. Compare models, understand real
-                performance, and choose what to ship with confidence.
+                AI Store is where teams go when they need a clear, unbiased view of the AI
+                landscape. Compare models, understand real performance, and choose what to ship with
+                confidence.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
@@ -114,12 +112,8 @@ export default function LearnMorePage() {
                     key={stat.label}
                     className="border border-white/5 rounded-2xl px-4 py-3 bg-white/5 bg-linear-to-br from-white/5 to-transparent"
                   >
-                    <div className="text-lg font-semibold text-white">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {stat.label}
-                    </div>
+                    <div className="text-lg font-semibold text-white">{stat.value}</div>
+                    <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -144,45 +138,25 @@ export default function LearnMorePage() {
                   </div>
                   <div className="grid grid-cols-3 gap-3 text-xs">
                     <div className="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                      <div className="text-[11px] text-gray-400 mb-1">
-                        Best value
-                      </div>
-                      <div className="text-sm font-medium text-white">
-                        Cost / token
-                      </div>
-                      <div className="text-[11px] text-emerald-400 mt-1">
-                        -32% vs avg
-                      </div>
+                      <div className="text-[11px] text-gray-400 mb-1">Best value</div>
+                      <div className="text-sm font-medium text-white">Cost / token</div>
+                      <div className="text-[11px] text-emerald-400 mt-1">-32% vs avg</div>
                     </div>
                     <div className="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                      <div className="text-[11px] text-gray-400 mb-1">
-                        Latency
-                      </div>
-                      <div className="text-sm font-medium text-white">
-                        {"<"} 400ms
-                      </div>
-                      <div className="text-[11px] text-blue-400 mt-1">
-                        P95 tracked
-                      </div>
+                      <div className="text-[11px] text-gray-400 mb-1">Latency</div>
+                      <div className="text-sm font-medium text-white">{'<'} 400ms</div>
+                      <div className="text-[11px] text-blue-400 mt-1">P95 tracked</div>
                     </div>
                     <div className="rounded-2xl bg-white/5 border border-white/10 px-3 py-2">
-                      <div className="text-[11px] text-gray-400 mb-1">
-                        Reliability
-                      </div>
-                      <div className="text-sm font-medium text-white">
-                        99.9%
-                      </div>
-                      <div className="text-[11px] text-gray-400 mt-1">
-                        Vendor mix
-                      </div>
+                      <div className="text-[11px] text-gray-400 mb-1">Reliability</div>
+                      <div className="text-sm font-medium text-white">99.9%</div>
+                      <div className="text-[11px] text-gray-400 mt-1">Vendor mix</div>
                     </div>
                   </div>
 
                   <div className="mt-1 rounded-2xl bg-linear-to-r from-blue-600/40 via-blue-500/10 to-transparent border border-white/10 px-4 py-3 flex items-center justify-between gap-4">
                     <div>
-                      <div className="text-xs text-gray-300">
-                        Recommended next model
-                      </div>
+                      <div className="text-xs text-gray-300">Recommended next model</div>
                       <div className="text-sm font-medium text-white mt-0.5">
                         Match for &quot;chat + tools&quot; use case
                       </div>
@@ -206,22 +180,18 @@ export default function LearnMorePage() {
         <section className="px-6 mt-24">
           <div className="max-w-5xl mx-auto grid gap-16 md:grid-cols-[minmax(0,2.2fr)_minmax(0,2fr)] items-start">
             <div className="space-y-6">
-              <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
-                Why AI Store
-              </p>
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-400">Why AI Store</p>
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-                The AI ecosystem is moving fast. Your decisions can’t be
-                guesses.
+                The AI ecosystem is moving fast. Your decisions can’t be guesses.
               </h2>
               <p className="text-lg text-gray-400 leading-relaxed">
-                Every week, new models ship, prices change, and capabilities
-                evolve. Teams waste hours trying to keep up, only to make
-                decisions based on outdated tabs and anecdotes.
+                Every week, new models ship, prices change, and capabilities evolve. Teams waste
+                hours trying to keep up, only to make decisions based on outdated tabs and
+                anecdotes.
               </p>
               <p className="text-lg text-gray-400 leading-relaxed">
-                AI Store is a dedicated layer between you and the noise. It
-                turns fragmented provider data into something teams can search,
-                compare, and actually act on.
+                AI Store is a dedicated layer between you and the noise. It turns fragmented
+                provider data into something teams can search, compare, and actually act on.
               </p>
             </div>
 
@@ -231,12 +201,8 @@ export default function LearnMorePage() {
                   key={pillar.title}
                   className="rounded-3xl border border-white/5 bg-white/5 bg-linear-to-br from-white/5 to-transparent px-5 py-4"
                 >
-                  <h3 className="text-lg font-medium text-white">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-sm text-gray-400 mt-1 leading-relaxed">
-                    {pillar.description}
-                  </p>
+                  <h3 className="text-lg font-medium text-white">{pillar.title}</h3>
+                  <p className="text-sm text-gray-400 mt-1 leading-relaxed">{pillar.description}</p>
                 </div>
               ))}
             </div>
@@ -256,9 +222,8 @@ export default function LearnMorePage() {
                 </h2>
               </div>
               <p className="max-w-md text-sm text-gray-400 leading-relaxed">
-                AI Store fits into the way your team already makes decisions:
-                evaluating options, aligning stakeholders, and getting a model
-                into production without surprises.
+                AI Store fits into the way your team already makes decisions: evaluating options,
+                aligning stakeholders, and getting a model into production without surprises.
               </p>
             </div>
 
@@ -271,12 +236,8 @@ export default function LearnMorePage() {
                   <p className="text-[11px] uppercase tracking-[0.16em] text-gray-400">
                     {flow.eyebrow}
                   </p>
-                  <h3 className="mt-2 text-lg font-medium text-white">
-                    {flow.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-400 leading-relaxed">
-                    {flow.copy}
-                  </p>
+                  <h3 className="mt-2 text-lg font-medium text-white">{flow.title}</h3>
+                  <p className="mt-2 text-sm text-gray-400 leading-relaxed">{flow.copy}</p>
                   <ul className="mt-4 space-y-1.5 text-xs text-gray-300">
                     {flow.bullets.map((item) => (
                       <li key={item} className="flex gap-2">
@@ -302,9 +263,8 @@ export default function LearnMorePage() {
                 Start exploring the AI model space with clarity.
               </h2>
               <p className="text-sm md:text-base text-gray-200/80 max-w-xl leading-relaxed">
-                Jump straight into the catalog, or let capability matching do
-                the work for you. Either way, you stay in control of cost,
-                performance, and risk.
+                Jump straight into the catalog, or let capability matching do the work for you.
+                Either way, you stay in control of cost, performance, and risk.
               </p>
             </div>
 
@@ -327,9 +287,7 @@ export default function LearnMorePage() {
       </main>
 
       <footer className="border-t border-gray-900 py-10 px-6 mt-24 text-center text-sm text-gray-600">
-        <p>
-          Built for developers, data scientists, and technical decision-makers.
-        </p>
+        <p>Built for developers, data scientists, and technical decision-makers.</p>
       </footer>
     </div>
   );

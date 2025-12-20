@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import Card from "@/components/Card";
-import LoadingState from "@/components/LoadingState";
-import ErrorState from "@/components/ErrorState";
-import { trpc } from "@/lib/trpc";
-import Link from "next/link";
-import { Model } from "@/lib/types";
+import { useState, useEffect } from 'react';
+import Header from '@/components/Header';
+import Card from '@/components/Card';
+import LoadingState from '@/components/LoadingState';
+import ErrorState from '@/components/ErrorState';
+import { trpc } from '@/lib/trpc';
+import Link from 'next/link';
+import { Model } from '@/lib/types';
 
 interface Suggestion {
   model: Model;
@@ -40,7 +40,7 @@ export default function SuggestionsPage() {
         handleSelectModel(data[0]);
       }
     } catch (err) {
-      setError("Failed to load models");
+      setError('Failed to load models');
       console.error(err);
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function SuggestionsPage() {
       });
       setSuggestions((response.suggestions || []) as unknown as Suggestion[]);
     } catch (err) {
-      console.error("Failed to load suggestions:", err);
+      console.error('Failed to load suggestions:', err);
       setSuggestions([]);
     } finally {
       setLoadingSuggestions(false);
@@ -75,9 +75,7 @@ export default function SuggestionsPage() {
       <main className="pt-24 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
-            <h1 className="text-5xl font-semibold tracking-tight mb-4">
-              Model Suggestions
-            </h1>
+            <h1 className="text-5xl font-semibold tracking-tight mb-4">Model Suggestions</h1>
             <p className="text-xl text-text-secondary">
               Find similar and alternative models based on your current choice
             </p>
@@ -95,15 +93,13 @@ export default function SuggestionsPage() {
                       onClick={() => handleSelectModel(model)}
                       className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                         selectedModel?.id === model.id
-                          ? "bg-primary text-white"
-                          : "bg-card-bg-hover text-text-secondary hover:bg-border hover:text-text-primary"
+                          ? 'bg-primary text-white'
+                          : 'bg-card-bg-hover text-text-secondary hover:bg-border hover:text-text-primary'
                       }`}
                     >
                       <div className="font-medium">{model.name}</div>
                       {model.provider && (
-                        <div className="text-xs opacity-75 mt-1">
-                          {model.provider.name}
-                        </div>
+                        <div className="text-xs opacity-75 mt-1">{model.provider.name}</div>
                       )}
                     </button>
                   ))}
@@ -118,13 +114,9 @@ export default function SuggestionsPage() {
                   <Card className="mb-6">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h2 className="text-2xl font-semibold mb-2">
-                          {selectedModel.name}
-                        </h2>
+                        <h2 className="text-2xl font-semibold mb-2">{selectedModel.name}</h2>
                         {selectedModel.provider && (
-                          <p className="text-text-tertiary">
-                            {selectedModel.provider.name}
-                          </p>
+                          <p className="text-text-tertiary">{selectedModel.provider.name}</p>
                         )}
                       </div>
                       <Link
@@ -140,53 +132,52 @@ export default function SuggestionsPage() {
                       {selectedModel.modelPricings && (
                         <>
                           <div>
-                            <div className="text-text-tertiary mb-1">
-                              Input Price
-                            </div>
+                            <div className="text-text-tertiary mb-1">Input Price</div>
                             <div className="text-text-primary font-semibold">
                               $
                               {selectedModel.modelPricings.inputPricePerMillion?.toString() ||
-                                "N/A"}
+                                'N/A'}
                               /M
                             </div>
                           </div>
                           <div>
-                            <div className="text-text-tertiary mb-1">
-                              Output Price
-                            </div>
+                            <div className="text-text-tertiary mb-1">Output Price</div>
                             <div className="text-text-primary font-semibold">
                               $
                               {selectedModel.modelPricings.outputPricePerMillion?.toString() ||
-                                "N/A"}
+                                'N/A'}
                               /M
                             </div>
                           </div>
                         </>
                       )}
-                      {selectedModel.metadata && (
-                        <>
-                          {selectedModel.metadata.contextWindowTokens && (
-                            <div>
-                              <div className="text-text-tertiary mb-1">
-                                Context
+                      {(() => {
+                        if (!selectedModel.metadata) return null;
+                        const metadata = selectedModel.metadata as {
+                          contextWindowTokens?: number;
+                          maxOutputTokens?: number;
+                        };
+                        return (
+                          <>
+                            {metadata.contextWindowTokens && (
+                              <div>
+                                <div className="text-text-tertiary mb-1">Context</div>
+                                <div className="text-text-primary font-semibold">
+                                  {metadata.contextWindowTokens.toLocaleString()}
+                                </div>
                               </div>
-                              <div className="text-text-primary font-semibold">
-                                {selectedModel.metadata.contextWindowTokens.toLocaleString()}
+                            )}
+                            {metadata.maxOutputTokens && (
+                              <div>
+                                <div className="text-text-tertiary mb-1">Max Output</div>
+                                <div className="text-text-primary font-semibold">
+                                  {metadata.maxOutputTokens.toLocaleString()}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {selectedModel.metadata.maxOutputTokens && (
-                            <div>
-                              <div className="text-text-tertiary mb-1">
-                                Max Output
-                              </div>
-                              <div className="text-text-primary font-semibold">
-                                {selectedModel.metadata.maxOutputTokens.toLocaleString()}
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </Card>
 
@@ -212,9 +203,7 @@ export default function SuggestionsPage() {
                                 <Link
                                   href={`/models/${encodeURIComponent(
                                     suggestion.model.name
-                                  )}/${encodeURIComponent(
-                                    suggestion.model.version
-                                  )}`}
+                                  )}/${encodeURIComponent(suggestion.model.version)}`}
                                 >
                                   <h4 className="text-xl font-semibold text-text-primary hover:text-primary transition-colors">
                                     {suggestion.model.name}
@@ -228,63 +217,56 @@ export default function SuggestionsPage() {
                               </div>
                               <div className="text-right">
                                 <div className="text-xl font-bold text-primary">
-                                  {(suggestion.similarityScore * 100).toFixed(
-                                    0
-                                  )}
-                                  %
+                                  {(suggestion.similarityScore * 100).toFixed(0)}%
                                 </div>
-                                <div className="text-xs text-text-tertiary">
-                                  Similarity
-                                </div>
+                                <div className="text-xs text-text-tertiary">Similarity</div>
                               </div>
                             </div>
 
-                            <p className="text-text-secondary">
-                              {suggestion.reason}
-                            </p>
+                            <p className="text-text-secondary">{suggestion.reason}</p>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm pt-4 border-t border-border">
                               {suggestion.model.modelPricings && (
                                 <>
                                   <div>
-                                    <div className="text-text-tertiary mb-1">
-                                      Input
-                                    </div>
+                                    <div className="text-text-tertiary mb-1">Input</div>
                                     <div className="text-text-primary font-medium">
                                       $
                                       {suggestion.model.modelPricings.inputPricePerMillion?.toString() ||
-                                        "N/A"}
+                                        'N/A'}
                                       /M
                                     </div>
                                   </div>
                                   <div>
-                                    <div className="text-text-tertiary mb-1">
-                                      Output
-                                    </div>
+                                    <div className="text-text-tertiary mb-1">Output</div>
                                     <div className="text-text-primary font-medium">
                                       $
                                       {suggestion.model.modelPricings.outputPricePerMillion?.toString() ||
-                                        "N/A"}
+                                        'N/A'}
                                       /M
                                     </div>
                                   </div>
                                 </>
                               )}
-                              {suggestion.model.metadata && (suggestion.model.metadata as { contextWindowTokens?: number }).contextWindowTokens && (
-                                <div>
-                                  <div className="text-text-tertiary mb-1">
-                                    Context
-                                  </div>
-                                  <div className="text-text-primary font-medium">
-                                    {((suggestion.model.metadata as { contextWindowTokens: number }).contextWindowTokens).toLocaleString()}
-                                  </div>
-                                </div>
-                              )}
+                              {(() => {
+                                const metadata = suggestion.model.metadata as {
+                                  contextWindowTokens?: number;
+                                };
+                                return (
+                                  metadata &&
+                                  metadata.contextWindowTokens && (
+                                    <div>
+                                      <div className="text-text-tertiary mb-1">Context</div>
+                                      <div className="text-text-primary font-medium">
+                                        {metadata.contextWindowTokens.toLocaleString()}
+                                      </div>
+                                    </div>
+                                  )
+                                );
+                              })()}
                               <div className="flex items-end">
                                 <button
-                                  onClick={() =>
-                                    handleSelectModel(suggestion.model)
-                                  }
+                                  onClick={() => handleSelectModel(suggestion.model)}
                                   className="text-primary hover:text-primary-hover text-sm transition-colors"
                                 >
                                   Compare →

@@ -1,14 +1,11 @@
-import Card from "@/components/Card";
+import Card from '@/components/Card';
 
 interface ExampleTasksProps {
   tasks: string[];
   onSelectTask: (task: string) => void;
 }
 
-export default function ExampleTasks({
-  tasks,
-  onSelectTask,
-}: ExampleTasksProps) {
+export default function ExampleTasks({ tasks, onSelectTask }: ExampleTasksProps) {
   return (
     <Card>
       <h3 className="text-lg font-semibold mb-4">Example Tasks</h3>

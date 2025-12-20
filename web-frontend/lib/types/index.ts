@@ -31,11 +31,11 @@ export interface Model {
   releaseDate?: string | Date;
   status?: string;
   deprecated?: boolean;
-  capabilities?: Record<string, unknown> | null;
-  modalities?: string[] | null;
-  supportedFormats?: string[] | null;
-  languages?: string[] | null;
-  metadata?: Record<string, unknown> | null;
+  capabilities?: unknown;
+  modalities?: unknown;
+  supportedFormats?: unknown;
+  languages?: unknown;
+  metadata?: unknown;
   modelPricingId?: number;
   provider?: Provider | null;
   modelPricings?: ModelPricing | null;

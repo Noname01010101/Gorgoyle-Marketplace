@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { trpc } from "@/lib/trpc";
-import { Model } from "@/lib/types";
+import { useState, useEffect } from 'react';
+import { trpc } from '@/lib/trpc';
+import { Model } from '@/lib/types';
 
 export function usePricingModels(minInput: number, maxOutput: number) {
   const [models, setModels] = useState<Model[]>([]);
@@ -15,9 +15,9 @@ export function usePricingModels(minInput: number, maxOutput: number) {
         minInput: min,
         maxOutput: max,
       });
-      setModels(data as Model[]);
+      setModels(data as unknown as Model[]);
     } catch (err) {
-      setError("Failed to load pricing data");
+      setError('Failed to load pricing data');
       console.error(err);
     } finally {
       setLoading(false);
