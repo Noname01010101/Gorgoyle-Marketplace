@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { PrismaClient, Prisma } from '@ai-store/prisma-db';
 
 const prismaClient = new PrismaClient();
 
@@ -27,11 +26,9 @@ export interface CapabilityMatchResult {
   explanation: string;
 }
 
-function decimalToNumber(
-  value: Decimal | number | null | undefined
-): number | null {
+function decimalToNumber(value: Prisma.Decimal | number | null | undefined): number | null {
   if (value == null) return null;
-  if (typeof value === "number") return value;
+  if (typeof value === 'number') return value;
   return value.toNumber();
 }
 
@@ -62,16 +59,13 @@ class CapabilityMatchingService {
 
     for (const model of models) {
       const cost = decimalToNumber(
-        model.modelPricings.normalizedPerMillion ??
-          model.modelPricings.inputPricePerMillion
+        model.modelPricings.normalizedPerMillion ?? model.modelPricings.inputPricePerMillion
       );
       const benchmarks = model.benchmarks;
       const avgBenchmarkScore =
         benchmarks.length > 0
-          ? benchmarks.reduce(
-              (acc: number, b: { score: number }) => acc + b.score,
-              0
-            ) / benchmarks.length
+          ? benchmarks.reduce((acc: number, b: { score: number }) => acc + b.score, 0) /
+            benchmarks.length
           : null;
 
       if (maxPrice != null && cost != null && cost > maxPrice) {
@@ -81,25 +75,19 @@ class CapabilityMatchingService {
 
       const normalizedCostScore = cost != null ? 1 / (1 + cost) : 0.5;
       const normalizedBenchmarkScore =
-        avgBenchmarkScore != null
-          ? Math.min(Math.max(avgBenchmarkScore / 100, 0), 1)
-          : 0.5;
+        avgBenchmarkScore != null ? Math.min(Math.max(avgBenchmarkScore / 100, 0), 1) : 0.5;
 
       const combinedScore =
-        costWeight * normalizedCostScore +
-        (1 - costWeight) * normalizedBenchmarkScore;
+        costWeight * normalizedCostScore + (1 - costWeight) * normalizedBenchmarkScore;
 
-      let explanation =
-        "balanced trade-off between cost and benchmark performance";
+      let explanation = 'balanced trade-off between cost and benchmark performance';
       if (avgBenchmarkScore != null && cost != null) {
         if (avgBenchmarkScore >= 85 && cost <= (maxPrice ?? cost + 1)) {
-          explanation =
-            "strong benchmarks while staying within cost constraints";
+          explanation = 'strong benchmarks while staying within cost constraints';
         } else if (cost < (maxPrice ?? cost + 1)) {
-          explanation =
-            "prioritizes lower cost while maintaining reasonable performance";
+          explanation = 'prioritizes lower cost while maintaining reasonable performance';
         } else {
-          explanation = "higher performance at a relatively higher cost";
+          explanation = 'higher performance at a relatively higher cost';
         }
       }
 

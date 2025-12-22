@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { PrismaClient, Prisma } from '@ai-store/prisma-db';
 
 const client = new PrismaClient();
 
@@ -13,18 +12,15 @@ class PriceRangeFilter {
       },
     });
 
-    let filtered = models.filter((model: any) => {
+    const filtered = models.filter((model) => {
       if (!model.modelPricings) return false;
 
-      const maxDecimal = new Decimal(max);
-      const minDecimal = new Decimal(min);
+      const maxDecimal = new Prisma.Decimal(max);
+      const minDecimal = new Prisma.Decimal(min);
 
-      const isLessThanMax =
-        model.modelPricings.inputPricePerMillion.lessThanOrEqualTo(maxDecimal);
+      const isLessThanMax = model.modelPricings.inputPricePerMillion.lessThanOrEqualTo(maxDecimal);
       const isGreaterThanMin =
-        model.modelPricings.inputPricePerMillion.greaterThanOrEqualTo(
-          minDecimal
-        );
+        model.modelPricings.inputPricePerMillion.greaterThanOrEqualTo(minDecimal);
 
       return isLessThanMax && isGreaterThanMin;
     });
@@ -33,16 +29,14 @@ class PriceRangeFilter {
 
   static async filterByRangeOutput(min: number, max: number) {
     const pricesTable = await client.modelPricing.findMany({});
-    let filtered = pricesTable.filter((e: any) => {
+    const filtered = pricesTable.filter((e) => {
       // 1. Ensure formattedMax and formattedMin are converted to Decimal objects
-      const maxDecimal = new Decimal(max);
-      const minDecimal = new Decimal(min);
+      const maxDecimal = new Prisma.Decimal(max);
+      const minDecimal = new Prisma.Decimal(min);
 
       // 2. Use the Decimal object's comparison methods
-      const isLessThanMax =
-        e.outputPricePerMillion.lessThanOrEqualTo(maxDecimal);
-      const isGreaterThanMin =
-        e.outputPricePerMillion.greaterThanOrEqualTo(minDecimal);
+      const isLessThanMax = e.outputPricePerMillion.lessThanOrEqualTo(maxDecimal);
+      const isGreaterThanMin = e.outputPricePerMillion.greaterThanOrEqualTo(minDecimal);
 
       return isLessThanMax && isGreaterThanMin;
     });
@@ -50,33 +44,24 @@ class PriceRangeFilter {
   }
 
   static async filterByRangeInputOutput(
-    inMax: Decimal | number,
-    inMin: Decimal | number,
-    outMax: Decimal | number,
-    outMin: Decimal | number
+    inMax: Prisma.Decimal | number,
+    inMin: Prisma.Decimal | number,
+    outMax: Prisma.Decimal | number,
+    outMin: Prisma.Decimal | number
   ) {
     const pricesTable = await client.modelPricing.findMany({});
-    let filtered = pricesTable.filter((e: any) => {
-      const maxDecimalIn = new Decimal(inMax);
-      const minDecimalIn = new Decimal(inMin);
-      const maxDecimalOut = new Decimal(outMax);
-      const minDecimalOut = new Decimal(outMin);
+    const filtered = pricesTable.filter((e) => {
+      const maxDecimalIn = new Prisma.Decimal(inMax);
+      const minDecimalIn = new Prisma.Decimal(inMin);
+      const maxDecimalOut = new Prisma.Decimal(outMax);
+      const minDecimalOut = new Prisma.Decimal(outMin);
 
-      const isLessThanMaxIn =
-        e.inputPricePerMillion.lessThanOrEqualTo(maxDecimalIn);
-      const isGreaterThanMinIn =
-        e.inputPricePerMillion.greaterThanOrEqualTo(minDecimalIn);
-      const isLessThanMaxOut =
-        e.outputPricePerMillion.lessThanOrEqualTo(maxDecimalOut);
-      const isGreaterThanMinOut =
-        e.outputPricePerMillion.greaterThanOrEqualTo(minDecimalOut);
+      const isLessThanMaxIn = e.inputPricePerMillion.lessThanOrEqualTo(maxDecimalIn);
+      const isGreaterThanMinIn = e.inputPricePerMillion.greaterThanOrEqualTo(minDecimalIn);
+      const isLessThanMaxOut = e.outputPricePerMillion.lessThanOrEqualTo(maxDecimalOut);
+      const isGreaterThanMinOut = e.outputPricePerMillion.greaterThanOrEqualTo(minDecimalOut);
 
-      return (
-        isLessThanMaxIn &&
-        isGreaterThanMinIn &&
-        isLessThanMaxOut &&
-        isGreaterThanMinOut
-      );
+      return isLessThanMaxIn && isGreaterThanMinIn && isLessThanMaxOut && isGreaterThanMinOut;
     });
     return filtered;
   }

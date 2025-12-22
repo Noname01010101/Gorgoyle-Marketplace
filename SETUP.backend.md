@@ -21,14 +21,14 @@ title: Setup Guide
 
 ```powershell
 docker-compose up db -d --build &&
-npx prisma migrate dev --name init --schema ./api/prisma/schema.prisma &&
-npm run seed:api
+pnpm --filter @ai-store/prisma-db migrate:dev --name init &&
+pnpm --filter @ai-store/prisma-db seed
 ```
 
 ### 2. Install dependencies
 
 ```powershell
-npm install
+pnpm install
 ```
 
 ### 3. Environment variables
@@ -38,7 +38,7 @@ Move `.env.dev` to `.env` for development
 ### 4. Testing
 
 ```powershell
-npm test --workspace=api
+pnpm --filter api test
 ```
 
 ---

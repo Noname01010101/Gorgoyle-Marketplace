@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@ai-store/prisma-db';
 
 const prismaClient = new PrismaClient();
 
@@ -24,7 +24,7 @@ class BenchmarksService {
   static async getBenchmarksForModel(modelId: number) {
     return prismaClient.benchmark.findMany({
       where: { modelId },
-      orderBy: { runAt: "desc" },
+      orderBy: { runAt: 'desc' },
     });
   }
 
@@ -47,19 +47,19 @@ class BenchmarksService {
   }
 
   static async getBenchmarkAggregationForModel(
-      modelId: number
-    ): Promise<BenchmarkAggregationResult> {
-      const aggregated = await prismaClient.benchmark.aggregate({
-        where: { modelId },
-        _avg: { score: true },
-        _count: { _all: true },
-      });
-  
-      return {
-        averageScore: aggregated._avg.score ?? null,
-        benchmarksCount: aggregated._count._all,
-      };
-    }
+    modelId: number
+  ): Promise<BenchmarkAggregationResult> {
+    const aggregated = await prismaClient.benchmark.aggregate({
+      where: { modelId },
+      _avg: { score: true },
+      _count: { _all: true },
+    });
+
+    return {
+      averageScore: aggregated._avg.score ?? null,
+      benchmarksCount: aggregated._count._all,
+    };
+  }
 }
 
 export default BenchmarksService;

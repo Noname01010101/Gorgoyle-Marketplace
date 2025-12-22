@@ -1,6 +1,5 @@
-import PriceRangeFilter from "./priceRange";
-import { PrismaClient } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import PriceRangeFilter from './priceRange';
+import { PrismaClient, Prisma } from '@ai-store/prisma-db';
 
 const client = new PrismaClient();
 
@@ -22,8 +21,8 @@ class SimilarPricesFinder {
   }
 
   private static async getPricing(modelName: string): Promise<{
-    input: Decimal;
-    output: Decimal;
+    input: Prisma.Decimal;
+    output: Prisma.Decimal;
   }> {
     const model = await client.modelPricing.findFirst({
       where: {
@@ -37,7 +36,7 @@ class SimilarPricesFinder {
         output: model.outputPricePerMillion,
       };
     } else {
-      throw new Error("Could not find the inputed model");
+      throw new Error('Could not find the inputed model');
     }
   }
 }

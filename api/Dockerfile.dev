@@ -2,21 +2,25 @@ FROM node:20
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-
+# Prefer pnpm workspace install to pull prisma-db package
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY api/package.json ./api/
+COPY web-frontend/package.json ./web-frontend/
+COPY packages/prisma-db/package.json ./packages/prisma-db/
 
-RUN npm ci
+# Install pnpm and workspace deps
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-COPY api/prisma ./api/prisma
+# Copy prisma package sources and generate client
+COPY packages/prisma-db ./packages/prisma-db
+RUN pnpm --filter @ai-store/prisma-db generate
 
-RUN npx prisma generate --schema=./api/prisma/schema.prisma
-
+# Copy api sources
 COPY api/src ./api/src
 COPY api/tsconfig.json ./api/tsconfig.json
 COPY api/host.ts ./api/host.ts
 
-RUN npm run build:api
+RUN pnpm --filter api build
 
 ENV DATABASE_URL="postgresql://DEV:PASS@db:5432/MAIN"
 

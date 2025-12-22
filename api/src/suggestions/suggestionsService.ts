@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { PrismaClient, Prisma } from '@ai-store/prisma-db';
 
 const prismaClient = new PrismaClient();
 
@@ -21,11 +20,9 @@ function toStringArray(value: unknown): string[] {
   return [];
 }
 
-function decimalToNumber(
-  value: Decimal | number | null | undefined
-): number | null {
+function decimalToNumber(value: Prisma.Decimal | number | null | undefined): number | null {
   if (value == null) return null;
-  if (typeof value === "number") return value;
+  if (typeof value === 'number') return value;
   return value.toNumber();
 }
 
@@ -48,9 +45,7 @@ function computeJaccardSimilarity(a: string[], b: string[]): number {
  * existing catalog + pricing + benchmarks data.
  */
 class SuggestionsService {
-  static async getSuggestionsForModel(
-    modelId: number
-  ): Promise<SuggestionResult[]> {
+  static async getSuggestionsForModel(modelId: number): Promise<SuggestionResult[]> {
     const targetModel = await prismaClient.aIModel.findUnique({
       where: { id: modelId },
       include: {
@@ -60,22 +55,18 @@ class SuggestionsService {
     });
 
     if (!targetModel) {
-      throw new Error("Model not found");
+      throw new Error('Model not found');
     }
 
-    const targetCapabilities = toStringArray(
-      targetModel.capabilities as unknown
-    );
+    const targetCapabilities = toStringArray(targetModel.capabilities as unknown);
     const targetCost = decimalToNumber(
       targetModel.modelPricings.normalizedPerMillion ??
         targetModel.modelPricings.inputPricePerMillion
     );
     const targetAvgBenchmark =
       targetModel.benchmarks.length > 0
-        ? targetModel.benchmarks.reduce(
-            (acc: number, b: { score: number }) => acc + b.score,
-            0
-          ) / targetModel.benchmarks.length
+        ? targetModel.benchmarks.reduce((acc: number, b: { score: number }) => acc + b.score, 0) /
+          targetModel.benchmarks.length
         : null;
 
     const otherModels = await prismaClient.aIModel.findMany({
@@ -89,30 +80,23 @@ class SuggestionsService {
     const suggestions: SuggestionResult[] = [];
 
     for (const candidate of otherModels) {
-      const candidateCapabilities = toStringArray(
-        candidate.capabilities as unknown
-      );
+      const candidateCapabilities = toStringArray(candidate.capabilities as unknown);
       const capabilitySimilarity = computeJaccardSimilarity(
         targetCapabilities,
         candidateCapabilities
       );
 
       const candidateCost = decimalToNumber(
-        candidate.modelPricings.normalizedPerMillion ??
-          candidate.modelPricings.inputPricePerMillion
+        candidate.modelPricings.normalizedPerMillion ?? candidate.modelPricings.inputPricePerMillion
       );
       const candidateAvgBenchmark =
         candidate.benchmarks.length > 0
-          ? candidate.benchmarks.reduce(
-              (acc: number, b: { score: number }) => acc + b.score,
-              0
-            ) / candidate.benchmarks.length
+          ? candidate.benchmarks.reduce((acc: number, b: { score: number }) => acc + b.score, 0) /
+            candidate.benchmarks.length
           : null;
 
       const costDelta =
-        targetCost != null && candidateCost != null
-          ? candidateCost - targetCost
-          : null;
+        targetCost != null && candidateCost != null ? candidateCost - targetCost : null;
       const benchmarkDelta =
         targetAvgBenchmark != null && candidateAvgBenchmark != null
           ? candidateAvgBenchmark - targetAvgBenchmark
@@ -120,18 +104,15 @@ class SuggestionsService {
 
       // Simple combined score: prioritize capability similarity, then adjust
       // slightly by cost and benchmark deltas.
-      const costComponent =
-        costDelta != null ? -Math.tanh(costDelta / 10) * 0.2 : 0;
-      const benchmarkComponent =
-        benchmarkDelta != null ? Math.tanh(benchmarkDelta / 10) * 0.2 : 0;
-      const similarityScore =
-        capabilitySimilarity * 0.6 + costComponent + benchmarkComponent;
+      const costComponent = costDelta != null ? -Math.tanh(costDelta / 10) * 0.2 : 0;
+      const benchmarkComponent = benchmarkDelta != null ? Math.tanh(benchmarkDelta / 10) * 0.2 : 0;
+      const similarityScore = capabilitySimilarity * 0.6 + costComponent + benchmarkComponent;
 
-      let explanation = "similar capability profile";
+      let explanation = 'similar capability profile';
       if (costDelta != null && costDelta < 0) {
-        explanation = "cheaper with comparable capabilities";
+        explanation = 'cheaper with comparable capabilities';
       } else if (benchmarkDelta != null && benchmarkDelta > 0) {
-        explanation = "better benchmarks with similar capabilities";
+        explanation = 'better benchmarks with similar capabilities';
       }
 
       suggestions.push({

@@ -27,5 +27,5 @@ Where to find code
 
 Notes for contributors
 
-- Use Prisma schema (`api/prisma/schema.prisma`) for DB changes.
+- Use Prisma schema (`packages/prisma-db/prisma/schema.prisma`) for DB changes.
 - Keep tags/capability vectors small and documented.

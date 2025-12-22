@@ -9,12 +9,10 @@
   "scripts": {
     "test": "vitest",
     "host": "node ./dist/host.js",
-    "seed": "tsx prisma/seed.ts",
     "build": "tsc",
     "clean": "rimraf dist node_modules .turbo",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/**/*.ts",
-    "postinstall": "prisma generate"
+    "lint": "eslint src/**/*.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
@@ -23,14 +21,13 @@
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
     "nodemon": "^3.1.11",
-    "prisma": "^6.19.0",
     "rimraf": "^6.0.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
+    "@ai-store/prisma-db": "workspace:*",
     "@trpc/server": "^11.7.2",
     "@types/cors": "^2.8.19",
     "cors": "^2.8.5",

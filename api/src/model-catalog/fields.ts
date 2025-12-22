@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@ai-store/prisma-db';
 
 const client = new PrismaClient();
 

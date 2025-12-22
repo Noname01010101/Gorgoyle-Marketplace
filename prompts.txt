@@ -1,0 +1,4 @@
+Create a fully working software that is a control panel to easily add new rows to the database according to the current shema.prisma structure. Make the control panel complete and robust, with tests that check if it works and that uses .env to know which DATABASE_URL to use. Make the interface be in dark mode and fully interactive. The software should not break any other part of the code. Add to it the most important features for direct control besides just the row. It must be a web app using React and TypeScript. Use best practices for code structure, error handling, and user experience.
+
+
+Add lightweight instrucctions for the ai agent on the main features and details of the codebase, so that it understands better the code. Also add instructions on how to correctly finish coding (typechecks, tests, lint and typecheck the test files themselves). Read all files necessary to understand the project and write only on .github/instructions
