@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist node_modules .turbo",
+    "typecheck": "tsc --noEmit",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",

@@ -27,7 +27,7 @@
     "start:web": "pnpm --filter web-frontend start",
     
     "clean": "pnpm --filter pricing-api clean && pnpm --filter @ai-store/web-frontend clean",
-    "typecheck": "pnpm --filter pricing-api typecheck && pnpm --filter @ai-store/web-frontend typecheck",
+    "typecheck": "pnpm --filter @ai-store/prisma-db typecheck && pnpm --filter pricing-api typecheck && pnpm --filter @ai-store/web-frontend typecheck",
     "lint": "pnpm --filter pricing-api lint && pnpm --filter @ai-store/web-frontend lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
