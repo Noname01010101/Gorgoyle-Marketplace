@@ -1,7 +1,7 @@
 
 services:
   db:
-    image: postgres
+    image: postgres:17
     restart: always
     container_name: database-api
     environment:
@@ -11,7 +11,7 @@ services:
     ports:
       - "2100:5432"
     volumes:
-      - db-volume:/var/lib/postgresql/data
+      - db-volume:/var/lib/postgresql
   api:
     container_name: api-service
     build:

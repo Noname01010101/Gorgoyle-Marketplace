@@ -25,6 +25,10 @@
     "dev:web": "pnpm --filter web-frontend dev",
     "build:web": "pnpm --filter web-frontend build",
     "start:web": "pnpm --filter web-frontend start",
+
+    "dev:admin": "pnpm --filter @ai-store/admin-control-panel dev",
+    "build:admin": "pnpm --filter @ai-store/admin-control-panel build",
+    "start:admin": "pnpm --filter @ai-store/admin-control-panel start",
     
     "clean": "pnpm --filter pricing-api clean && pnpm --filter @ai-store/web-frontend clean",
     "typecheck": "pnpm --filter @ai-store/prisma-db typecheck && pnpm --filter pricing-api typecheck && pnpm --filter @ai-store/web-frontend typecheck",
