@@ -9,8 +9,8 @@
     "start": "next start -p 3001",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test": "vitest --run",
+    "test:ui": "vitest --ui --run"
   },
   "dependencies": {
     "@ai-store/prisma-db": "workspace:*",
